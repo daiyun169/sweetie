@@ -1,0 +1,32 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: sweetie
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://10.10.8.205:3306/generate_code?useUnicode=true&characterEncoding=utf8
+    username: caocao
+    password: caocao123
+  jooq:
+    sql-dialect: mysql_5_7
+  thymeleaf:
+    mode: LEGACYHTML5
+    cache: false
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  devtools:
+    restart:
+      enabled: true
+
+server:
+  port: 8080
+
+logging:
+  file: ${spring.application.name}
+
+
+
+
+
