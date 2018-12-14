@@ -1,11 +1,11 @@
 package com.dr.sweetie.controller;
 
-import com.dr.sweetie.domain.Book;
+import com.dr.sweetie.domain.TableColumnInfoDO;
 import com.dr.sweetie.domain.TableInfoDO;
 import com.dr.sweetie.service.impl.TableService;
+import com.dr.sweetie.utils.JSONUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +27,7 @@ public class TableController {
      * @param modelMap
      * @return
      */
-    @GetMapping(value = "/table/list")
+    @GetMapping(value = "/")
     public String list(ModelMap modelMap) {
         String dataBaseName = tableService.getDataBaseName();
         List<TableInfoDO> allTables = tableService.getAllTables();
@@ -45,6 +45,20 @@ public class TableController {
         modelMap.addAttribute("dataBaseName", databaseName);
 
         return "table_add";
+    }
+
+    /**
+     * 进入表的字段展示页
+     */
+    @GetMapping(value = "/table/to-table-column-info")
+    public String toTableColumnInfo(ModelMap modelMap, @RequestParam String tableName) {
+
+        List<TableColumnInfoDO> tableColumn = tableService.getTableColumn(tableName);
+
+        modelMap.addAttribute("tableColumn", tableColumn);
+        modelMap.addAttribute("tableName", tableName);
+
+        return "table_column_info";
     }
 
     /**

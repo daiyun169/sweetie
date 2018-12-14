@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script type="text/javascript" th:src="@{https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js}"></script>
+    <link th:href="@{https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/default.css}" rel="stylesheet"/>
+    <link rel="icon" th:href="@{/images/favicon.ico}" type="image/x-icon"/>
+    <meta charset="UTF-8"/>
+    <title>表的字段</title>
+</head>
+
+<body>
+
+<div class="table-responsive">
+    <table class="table">
+        <caption th:text="|表（${tableName}）的字段|"></caption>
+        <thead>
+        <tr>
+            <th>列名</th>
+            <th>字段类型</th>
+            <th>字段说明</th>
+            <th>字段键</th>
+            <th>extra</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="col,iterStat: ${tableColumn}">
+            <td th:text="${col.columnName}"></td>
+            <td th:text="${col.dataType}"></td>
+            <td th:text="${col.columnComment}"></td>
+            <td th:text="${col.columnKey}"></td>
+            <td th:text="${col.extra}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div><a class="btn btn-primary" href="/" role="button">返回</a></div>
+
+</body>
+
+</html>

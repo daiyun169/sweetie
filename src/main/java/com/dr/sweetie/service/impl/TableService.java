@@ -1,7 +1,9 @@
 package com.dr.sweetie.service.impl;
 
 import com.dr.sweetie.domain.DatabaseDO;
+import com.dr.sweetie.domain.TableColumnInfoDO;
 import com.dr.sweetie.domain.TableInfoDO;
+import com.dr.sweetie.utils.StringUtils;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -25,17 +27,6 @@ public class TableService {
     private DSLContext dslContext;
 
     /**
-     * 获取数据库所有表
-     *
-     * @return
-     */
-    public List<TableInfoDO> getAllTables() {
-        SQL sql = DSL.sql("select table_name tableName, engine, table_comment tableComment, create_time createTime from information_schema.tables where table_schema = (select database())");
-        List<TableInfoDO> tableInfoDOList = dslContext.fetch(sql).stream().map(record -> record.into(TableInfoDO.class)).collect(toList());
-        return tableInfoDOList;
-    }
-
-    /**
      * 查询数据库名称
      *
      * @return
@@ -46,6 +37,31 @@ public class TableService {
         return into.getDatabaseName();
     }
 
+    /**
+     * 获取数据库所有表
+     *
+     * @return
+     */
+    public List<TableInfoDO> getAllTables() {
+        SQL sql = DSL.sql("select table_name tableName, engine, table_comment tableComment, create_time createTime from information_schema.tables where table_schema = (select database())");
+        List<TableInfoDO> tableInfoDOList = dslContext.fetch(sql).stream()
+                .map(record -> record.into(TableInfoDO.class)).collect(toList());
+        return tableInfoDOList;
+    }
+
+    /**
+     * 表的字段信息
+     *
+     * @param tableName
+     * @return
+     */
+    public List<TableColumnInfoDO> getTableColumn(String tableName) {
+        SQL sql = DSL.sql("select column_name columnName, data_type dataType, column_comment columnComment, column_key columnKey, extra from information_schema.columns " +
+                "where table_name = '" + StringUtils.trim(tableName) + "' and table_schema = (select database()) order by ordinal_position");
+        List<TableColumnInfoDO> tableColumnInfoDOList = dslContext.fetch(sql).stream()
+                .map(record -> record.into(TableColumnInfoDO.class)).collect(toList());
+        return tableColumnInfoDOList;
+    }
 
 //    public List<Map<String, Object>> list() {
 //        List<Map<String, Object>> list = generatorMapper.list();

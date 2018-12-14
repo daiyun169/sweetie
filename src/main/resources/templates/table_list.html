@@ -34,7 +34,10 @@
             <td th:text="${table.tableComment}"></td>
             <td th:text="${table.engine}"></td>
             <td th:text="${table.createTime}"></td>
-            <td><a class="btn btn-danger">生成代码</a></td>
+            <td>
+                <a class="btn btn-info" th:href="@{/table/to-table-column-info(tableName=${table.tableName})}">表的字段</a>
+                <a class="btn btn-danger">生成代码</a>
+            </td>
         </tr>
         </tbody>
     </table>
