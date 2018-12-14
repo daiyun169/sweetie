@@ -25,7 +25,7 @@ server:
 
 logging:
   file: ${spring.application.name}
-
+  config: classpath:logback-spring.xml
 
 
 
