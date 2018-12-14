@@ -1,4 +1,4 @@
-package com.dr.sweetie.service.impl;
+package com.dr.sweetie.service;
 
 import com.dr.sweetie.domain.DatabaseDO;
 import com.dr.sweetie.domain.TableColumnInfoDO;

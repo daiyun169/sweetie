@@ -1,7 +1,7 @@
 package com.dr.sweetie;
 
-import com.dr.sweetie.service.impl.TableService;
-import org.jooq.*;
+import com.dr.sweetie.service.TableService;
+import org.jooq.DSLContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
