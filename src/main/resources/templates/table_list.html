@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script type="text/javascript" th:src="@{https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js}"></script>
+    <link th:href="@{https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/default.css}" rel="stylesheet"/>
+    <link rel="icon" th:href="@{/images/favicon.ico}" type="image/x-icon"/>
+    <meta charset="UTF-8"/>
+    <title>代码生成工具</title>
+</head>
+
+<body>
+
+<div class="contentDiv">
+
+    <table class="table table-hover table-condensed">
+        <legend>
+            <strong th:text="|数据库（${dataBaseName}）|"></strong>
+        </legend>
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>名称</th>
+            <th>备注</th>
+            <th>类型</th>
+            <th>创建时间</th>
+            <th>管理</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="table,iterStat:${allTables}">
+            <th th:text="${iterStat.count}"></th>
+            <td th:text="${table.tableName}"></td>
+            <td th:text="${table.tableComment}"></td>
+            <td th:text="${table.engine}"></td>
+            <td th:text="${table.createTime}"></td>
+            <td><a class="btn btn-danger">生成代码</a></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div><a class="btn btn-primary" th:href="@{/table/to-add(databaseName=${dataBaseName})}" role="button">新建表</a></div>
+</div>
+
+</body>
+</html>
