@@ -15,6 +15,7 @@
 
     <legend>
         <strong th:text="|新建表 - 数据库（${dataBaseName}）|"></strong>
+        <a class="btn btn-primary" href="/" role="button">返回</a>
     </legend>
 
     <form th:action="@{/table/add}" method="post" class="form-horizontal">
@@ -30,7 +31,6 @@
         </div>
 
         <button type="button" class="btn btn-secondary" id="addFieldBtn">添加字段</button>
-
         <button type="submit" class="btn btn-primary">保存</button>
 
     </form>
