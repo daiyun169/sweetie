@@ -5,7 +5,7 @@ spring:
     name: sweetie
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://10.10.8.205:3306/generate_code?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://10.10.8.205:3306/sweetie?useUnicode=true&characterEncoding=utf8
     username: caocao
     password: caocao123
   jooq:
@@ -18,6 +18,8 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
   devtools:
     restart:
+      enabled: true
+    livereload:
       enabled: true
 
 server:
