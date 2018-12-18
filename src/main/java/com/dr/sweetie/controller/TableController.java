@@ -1,15 +1,19 @@
 package com.dr.sweetie.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.dr.sweetie.domain.TableColumnInfoDO;
 import com.dr.sweetie.domain.TableInfoDO;
 import com.dr.sweetie.service.TableService;
+import com.dr.sweetie.utils.JSONUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -68,6 +72,41 @@ public class TableController {
     @PostMapping(value = "/table/add")
     public String add(ModelMap modelMap) {
         return "redirect:/table/list";
+    }
+
+    /**
+     * 删除数据库表
+     */
+    @RequestMapping(value = "/table/del", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public String del(ModelMap modelMap, @RequestParam String tableName) {
+
+        int result = tableService.delTable(tableName);
+
+        modelMap.addAttribute("count", 1);
+
+        return JSONUtils.beanToJson(modelMap);
+    }
+
+    /**
+     * 生成代码
+     *
+     * @param request
+     * @param response
+     * @param tables
+     * @throws IOException
+     */
+    @PostMapping(value = "/table/generate/code")
+    public void batchCode(HttpServletRequest request, HttpServletResponse response, @RequestParam String[] tables) throws IOException {
+//        String[] tableNames = new String[]{};
+//        tableNames = JSON.parseArray(tables).toArray(tableNames);
+//        byte[] data = tableService.generatorCode(tableNames);
+//        response.reset();
+//        response.setHeader("Content-Disposition", "attachment; filename=\"bootdo.zip\"");
+//        response.addHeader("Content-Length", "" + data.length);
+//        response.setContentType("application/octet-stream; charset=UTF-8");
+//
+//        IOUtils.write(data, response.getOutputStream());
     }
 
 }

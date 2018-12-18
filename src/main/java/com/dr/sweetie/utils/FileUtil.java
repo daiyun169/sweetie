@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.UUID;
 
+/**
+ * @author qewli12
+ */
 public class FileUtil {
 
 	public static void uploadFile(byte[] file, String filePath, String fileName) throws Exception {

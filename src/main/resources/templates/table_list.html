@@ -38,15 +38,28 @@
             <td th:text="${table.engine}"></td>
             <td th:text="${table.createTime}"></td>
             <td>
-                <a class="btn btn-info" role="button" th:href="@{/table/to-table-column-info(tableName=${table.tableName})}">表的字段</a>
+                <a class="btn btn-info" role="button"
+                   th:href="@{/table/to-table-column-info(tableName=${table.tableName})}">表的字段</a>
                 <a class="btn btn-secondary" href="#" role="button">生成代码</a>
-                <a class="btn btn-danger" href="#" role="button">删除表</a>
+                <a class="btn btn-danger" href="#" role="button" th:onclick="'delTable(this)'"
+                   th:attr="table-name=${table.tableName}">删除表</a>
             </td>
         </tr>
         </tbody>
     </table>
 
 </div>
+<script>
 
+    function delTable(t) {
+        if (window.confirm("确认删除吗？")) {
+            var tableName = $(t).attr("table-name");
+            $.post("/table/del", {tableName: tableName}, function (data) {
+                window.location.reload();
+            }, "json");
+        }
+    }
+
+</script>
 </body>
 </html>

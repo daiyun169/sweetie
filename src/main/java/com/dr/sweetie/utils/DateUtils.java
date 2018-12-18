@@ -8,6 +8,7 @@ import java.util.Date;
 
 /**
  * 日期处理
+ * @author qewli12
  */
 public class DateUtils {
     private final static Logger logger = LoggerFactory.getLogger(DateUtils.class);

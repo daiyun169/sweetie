@@ -1,7 +1,8 @@
 package com.dr.sweetie.utils;
 
+
 /**
- * @author bootdo
+ * @author qewli12
  */
 public class StringUtils extends org.apache.commons.lang3.StringUtils{
 }

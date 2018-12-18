@@ -4,10 +4,7 @@ import com.dr.sweetie.domain.DatabaseDO;
 import com.dr.sweetie.domain.TableColumnInfoDO;
 import com.dr.sweetie.domain.TableInfoDO;
 import com.dr.sweetie.utils.StringUtils;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
-import org.jooq.SQL;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,6 +58,18 @@ public class TableService {
         List<TableColumnInfoDO> tableColumnInfoDOList = dslContext.fetch(sql).stream()
                 .map(record -> record.into(TableColumnInfoDO.class)).collect(toList());
         return tableColumnInfoDOList;
+    }
+
+    /**
+     * 删除表
+     *
+     * @param tableName
+     * @return
+     */
+    public int delTable(String tableName) {
+        Name name = DSL.name(tableName);
+        DropTableStep dropTableStep = dslContext.dropTableIfExists(name);
+        return dropTableStep.execute();
     }
 
 //    public List<Map<String, Object>> list() {

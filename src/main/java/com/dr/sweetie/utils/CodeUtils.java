@@ -21,11 +21,16 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * 代码生成器   工具类
+ *
+ * @author qewli12
  */
-public class GenUtils {
+public class CodeUtils {
 
 
+    /**
+     * 代码模版路径
+     * @return
+     */
     public static List<String> getTemplates() {
         List<String> templates = new ArrayList<String>();
         templates.add("templates/common/generator/domain.java.vm");
