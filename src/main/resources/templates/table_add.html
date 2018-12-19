@@ -18,11 +18,12 @@
         <a class="btn btn-primary" href="/" role="button">返回</a>
     </legend>
 
-    <form th:action="@{/table/add}" method="post" class="form-horizontal">
+    <form th:action="@{/table/add}" method="post" class="form-horizontal" autocomplete="off">
 
         <div class="form-row">
             <div class="form-group col-md-2">
-                <input type="text" class="form-control" name="tableName" autocomplete="off" placeholder="表名" required>
+                <input type="text" class="form-control" id="tableName" name="tableName" autocomplete="off"
+                       placeholder="表名" required>
             </div>
         </div>
 
@@ -31,77 +32,147 @@
         </div>
 
         <button type="button" class="btn btn-secondary" id="addFieldBtn">添加字段</button>
-        <button type="submit" class="btn btn-primary">保存</button>
+        <button type="button" class="btn btn-primary" onclick="submitForm()">保存</button>
 
     </form>
 </div>
 
 <script>
 
+    function delRow(num) {
+        $("#form-row-" + num).remove();
+    }
+
+    function addField() {
+        var data = {num: ++count};
+        var tpl = $("#fieldRowTemp").html();
+        var tpl = template(tpl);
+        var html = tpl(data);
+        $(".fieldRowDiv").append(html);
+    }
+
+    function submitForm() {
+
+        var params_obj = {
+            tableName: "",
+            fields: []
+        };
+
+        var tableName = $("#tableName").val();
+        if (!tableName) {
+            alert("tableName 不能为空");
+            return;
+        }
+
+        params_obj.tableName = tableName.trim();
+
+        $(".fieldRowDiv").find(".form-row").each(function (i) {
+            var field = {}
+            field.name = "";
+            field.type = "";
+            field.lenght = 0;
+            field.key = false;
+            field.comment = "";
+            $(this).find(":input").each(function (j) {
+                if ($(this).is('input') || $(this).is('select')) {
+                    var name = $(this).attr("name");
+                    if (name.indexOf("inputName") != -1) {
+                        field.name = $(this).val();
+                    } else if (name.indexOf("inputFieldType") != -1) {
+                        field.type = $(this).val();
+                    } else if (name.indexOf("inputFieldLenght") != -1) {
+                        field.lenght = $(this).val();
+                    } else if (name.indexOf("inputPrimaryKey") != -1) {
+                        field.key = $(this).prop("checked");
+                    } else if (name.indexOf("inputComment") != -1) {
+                        field.comment = $(this).val();
+                    }
+                }
+            });
+            params_obj.fields.push(field);
+        });
+
+        if (params_obj.length == 0) {
+            alert("无有效的字段");
+            return;
+        }
+
+        $.ajax({
+            method: "POST",
+            url: "/table/add",
+            contentType: 'application/json',
+            data: JSON.stringify(params_obj),
+            success: function (data) {
+                if(data.code === 0){
+                    alert("成功");
+                } else {
+                    alert("失败：" + data.msg);
+                }
+            },
+            error: function(data){
+                alert("网络异常");
+            }
+        });
+    }
+
     window.template();
 
     var count = 0;
 
     $(document).ready(function () {
-
-        function addField(){
-            var data = {num: ++count};
-            var tpl = $("#fieldRowTemp").html();
-            var tpl = template(tpl);
-            var html = tpl(data);
-            $(".fieldRowDiv").append(html);
-        }
-
         $("#addFieldBtn").click(addField);
-
         addField();
     });
 
 </script>
 
 <script id="fieldRowTemp" type="text/html">
-    <div class="form-row">
+    <div class="form-row" id="form-row-<%=num%>">
         <div class="form-group col-md-2">
-            <input type="text" class="form-control" id="inputName" name="inputName<%=num%>" autocomplete="off" placeholder="字段名称<%=num%>" required>
+            <input type="text" class="form-control" name="inputName<%=num%>" autocomplete="off"
+                   placeholder="字段名称<%=num%>" required>
         </div>
         <div class="form-group col-md-1">
-
-            <select id="inputFieldType" name="inputFieldType<%=num%>" class="form-control" required>
-                <option value="tinyint">tinyint</option>
-                <option value="smallint">smallint</option>
-                <option value="mediumint">mediumint</option>
-                <option value="int">int</option>
-                <option value="integer">integer</option>
+            <select name="inputFieldType<%=num%>" class="form-control" required>
                 <option value="bigint">bigint</option>
+                <option value="int">int</option>
+                <option value="tinyint">tinyint</option>
+
                 <option value="float">float</option>
                 <option value="double">double</option>
+
                 <option value="bit">bit</option>
-                <option value="char">char</option>
+
                 <option value="varchar" selected>varchar</option>
-                <option value="tinytext">tinytext</option>
                 <option value="text">text</option>
-                <option value="mediumtext">mediumtext</option>
                 <option value="longtext">longtext</option>
+
                 <option value="date">date</option>
                 <option value="datetime">datetime</option>
                 <option value="timestamp">timestamp</option>
             </select>
         </div>
         <div class="form-group col-md-1">
-            <input type="number" class="form-control" id="inputFieldLenght" name="inputFieldLenght<%=num%>" autocomplete="off"
-                   value="0">
+            <input type="number" class="form-control" name="inputFieldLenght<%=num%>" value="0" min="0">
         </div>
-        <div class="form-group col-md-3">
-            <div class="input-group mb-3">
+        <div class="form-group col-md-2">
+            <input type="text" class="form-control" name="inputComment<%=num%>" autocomplete="off"
+                   placeholder="字段描述<%=num%>">
+        </div>
+        <div class="form-group col-md-2">
+            <div class="input-group">
                 <div class="input-group-prepend">
                     <div class="input-group-text">
-                        <input type="checkbox" aria-label="Checkbox for following text input">
+                        <input type="checkbox" name="inputPrimaryKey<%=num%>">
                     </div>
                 </div>
                 <div class="input-group-append">
                     <span class="input-group-text bg-warning">Primary key</span>
                 </div>
             </div>
+        </div>
+        <div class="form-group col-md-1">
+            <button type="button" class="btn btn-danger" onclick="delRow(<%=num%>)">删除</button>
         </div>
     </div>
 </script>

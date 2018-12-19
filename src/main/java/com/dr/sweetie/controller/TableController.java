@@ -1,11 +1,11 @@
 package com.dr.sweetie.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.dr.sweetie.domain.TableColumnInfoDO;
 import com.dr.sweetie.domain.TableInfoDO;
+import com.dr.sweetie.domain.TableInsertReq;
 import com.dr.sweetie.service.TableService;
-import com.dr.sweetie.utils.JSONUtils;
-import org.apache.commons.io.IOUtils;
+import com.dr.sweetie.utils.R;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -20,6 +20,7 @@ import java.util.List;
  * @author qewli12
  * 2018/12/14 15:50
  */
+@Slf4j
 @Controller
 public class TableController {
 
@@ -69,9 +70,16 @@ public class TableController {
     /**
      * 新增数据库表
      */
-    @PostMapping(value = "/table/add")
-    public String add(ModelMap modelMap) {
-        return "redirect:/table/list";
+    @RequestMapping(value = "/table/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public R add(@RequestBody TableInsertReq tableInsertReq) {
+        try {
+            tableService.createTable(tableInsertReq);
+        } catch (Exception e) {
+            log.error("新建失败", e);
+            return R.error(e.getMessage());
+        }
+        return R.ok();
     }
 
     /**
@@ -79,13 +87,9 @@ public class TableController {
      */
     @RequestMapping(value = "/table/del", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public String del(ModelMap modelMap, @RequestParam String tableName) {
-
-        int result = tableService.delTable(tableName);
-
-        modelMap.addAttribute("count", 1);
-
-        return JSONUtils.beanToJson(modelMap);
+    public R del(@RequestParam String tableName) {
+        tableService.delTable(tableName);
+        return R.ok();
     }
 
     /**
@@ -97,7 +101,11 @@ public class TableController {
      * @throws IOException
      */
     @PostMapping(value = "/table/generate/code")
-    public void batchCode(HttpServletRequest request, HttpServletResponse response, @RequestParam String[] tables) throws IOException {
+    @ResponseBody
+    public R batchCode(HttpServletRequest request, HttpServletResponse response, @RequestParam String[] tables) throws IOException {
+
+        return R.ok();
+
 //        String[] tableNames = new String[]{};
 //        tableNames = JSON.parseArray(tables).toArray(tableNames);
 //        byte[] data = tableService.generatorCode(tableNames);
