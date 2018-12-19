@@ -16,6 +16,7 @@
     <legend>
         <strong th:text="|新建表 - 数据库（${dataBaseName}）|"></strong>
         <a class="btn btn-primary" href="/" role="button">返回</a>
+        <button type="button" class="btn btn-secondary" id="addFieldBtn">添加字段</button>
     </legend>
 
     <form th:action="@{/table/add}" method="post" class="form-horizontal" autocomplete="off">
@@ -31,7 +32,6 @@
 
         </div>
 
-        <button type="button" class="btn btn-secondary" id="addFieldBtn">添加字段</button>
         <button type="button" class="btn btn-primary" onclick="submitForm()">保存</button>
 
     </form>
@@ -103,13 +103,13 @@
             contentType: 'application/json',
             data: JSON.stringify(params_obj),
             success: function (data) {
-                if(data.code === 0){
+                if (data.code === 0) {
                     alert("成功");
                 } else {
                     alert("失败：" + data.msg);
                 }
             },
-            error: function(data){
+            error: function (data) {
                 alert("网络异常");
             }
         });
@@ -155,7 +155,8 @@
         <div class="form-group col-md-1">
             <input type="number" class="form-control" name="inputFieldLenght<%=num%>" value="0" min="0">
         </div>
-        <div class="form-group col-md-2">
+        <!-- comment 后端代码不生效，先注释掉-->
+        <div class="form-group col-md-2" hidden>
             <input type="text" class="form-control" name="inputComment<%=num%>" autocomplete="off"
                    placeholder="字段描述<%=num%>">
         </div>

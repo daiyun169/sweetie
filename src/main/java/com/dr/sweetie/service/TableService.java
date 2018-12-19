@@ -13,10 +13,8 @@ import org.jooq.impl.SQLDataType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.sql.Timestamp;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -48,7 +46,8 @@ public class TableService {
      * @return
      */
     public List<TableInfoDO> getAllTables() {
-        SQL sql = DSL.sql("select table_name tableName, engine, table_comment tableComment, create_time createTime from information_schema.tables where table_schema = (select database())");
+        SQL sql = DSL.sql("select table_name tableName, engine, table_comment tableComment, create_time createTime from information_schema.tables where table_schema = (select database())" +
+                " order by createTime desc");
         List<TableInfoDO> tableInfoDOList = dslContext.fetch(sql).stream()
                 .map(record -> record.into(TableInfoDO.class)).collect(toList());
         return tableInfoDOList;
@@ -151,11 +150,11 @@ public class TableService {
         } else if ("date".equals(type)) {
             dataType = SQLDataType.DATE.nullable(false);
         } else if ("datetime".equals(type)) {
-            dataType = SQLDataType.TIMESTAMP.nullable(false);
+            dataType = new DefaultDataType((SQLDialect) null, Date.class, "datetime").nullable(false);
         } else if ("timestamp".equals(type)) {
             dataType = SQLDataType.TIMESTAMP.nullable(false);
         } else {
-            dataType = SQLDataType.VARCHAR.length(len).nullable(false);
+            dataType = SQLDataType.VARCHAR.length(len);
         }
         return DSL.field(name, dataType, comment);
     }
