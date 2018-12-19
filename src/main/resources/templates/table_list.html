@@ -18,10 +18,12 @@
         <legend>
             <strong th:text="|数据库（${dataBaseName}）|"></strong>
             <a class="btn btn-primary" th:href="@{/table/to-add(databaseName=${dataBaseName})}" role="button">新建表</a>
+            <a class="btn btn-secondary" href="#" role="button" onclick="geneCode()">生成代码</a>
         </legend>
 
         <thead>
         <tr>
+            <th></th>
             <th>序号</th>
             <th>名称</th>
             <th>备注</th>
@@ -32,6 +34,9 @@
         </thead>
         <tbody>
         <tr th:each="table,iterStat:${allTables}">
+            <th>
+                <input name="gene" class="gene" type="checkbox" th:attr="tname=${table.tableName}">
+            </th>
             <th th:text="${iterStat.count}"></th>
             <td th:text="${table.tableName}"></td>
             <td th:text="${table.tableComment}"></td>
@@ -40,7 +45,7 @@
             <td>
                 <a class="btn btn-info" role="button"
                    th:href="@{/table/to-table-column-info(tableName=${table.tableName})}">表的字段</a>
-                <a class="btn btn-secondary" href="#" role="button">生成代码</a>
+                <!--<a class="btn btn-secondary" href="#" role="button">生成代码</a>-->
                 <a class="btn btn-danger" href="#" role="button" th:onclick="'delTable(this)'"
                    th:attr="table-name=${table.tableName}">删除表</a>
             </td>
@@ -58,6 +63,28 @@
                 window.location.reload();
             }, "json");
         }
+    }
+
+    function geneCode() {
+
+        var $gene = $(".gene");
+
+        var tableNames = []
+
+        $gene.each(function (i) {
+            if ($(this).prop("checked")) {
+                tableNames.push($(this).attr("tname"));
+            }
+        });
+
+        if (tableNames.length == 0) {
+            alert("未选择任何表");
+            return;
+        }
+
+        $.post("/table/generate/code", {tableNames: tableNames}, function (data) {
+            window.location.reload();
+        }, "json");
     }
 
 </script>

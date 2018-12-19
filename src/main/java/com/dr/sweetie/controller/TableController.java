@@ -7,6 +7,7 @@ import com.dr.sweetie.service.TableService;
 import com.dr.sweetie.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -97,16 +98,16 @@ public class TableController {
      *
      * @param request
      * @param response
-     * @param tables
+     * @param tableNames
      * @throws IOException
      */
-    @PostMapping(value = "/table/generate/code")
+    @PostMapping(value = "/table/generate/code", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public R batchCode(HttpServletRequest request, HttpServletResponse response, @RequestParam String[] tables) throws IOException {
+    public R batchCode(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "tableNames[]") List<String> tableNames) throws IOException {
 
-        return R.ok();
+        System.out.println(tableNames);
 
-//        String[] tableNames = new String[]{};
+        //        String[] tableNames = new String[]{};
 //        tableNames = JSON.parseArray(tables).toArray(tableNames);
 //        byte[] data = tableService.generatorCode(tableNames);
 //        response.reset();
@@ -115,6 +116,10 @@ public class TableController {
 //        response.setContentType("application/octet-stream; charset=UTF-8");
 //
 //        IOUtils.write(data, response.getOutputStream());
+
+        return R.ok();
+
+
     }
 
 }
