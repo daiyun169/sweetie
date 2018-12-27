@@ -18,7 +18,6 @@
         <legend>
             <strong th:text="|数据库（${dataBaseName}）|"></strong>
             <a class="btn btn-primary" th:href="@{/table/to-add(databaseName=${dataBaseName})}" role="button">新建表</a>
-            <a class="btn btn-secondary" href="#" role="button" onclick="geneCode()">生成代码</a>
         </legend>
 
         <thead>
@@ -53,6 +52,13 @@
         </tbody>
     </table>
 
+    <div class="input-group mb-1">
+        <div class="input-group-append">
+            <button class="btn btn-primary" type="button" id="button-addon2" onclick="geneCode()">生成代码</button>
+        </div>
+        <input type="text" id="package" class="form-control" placeholder="package( com.dr.sweetie )">
+        <input type="text" id="prefix" class="form-control" placeholder="table prefix ( swe_ )">
+    </div>
 </div>
 <script>
 
@@ -82,9 +88,12 @@
             return;
         }
 
-        $.post("/table/generate/code", {tableNames: tableNames}, function (data) {
-            window.location.reload();
-        }, "json");
+        var package = $("#package").val() || "com.dr.sweetie";
+
+        var prefix = $("#prefix").val() || "swe_";
+
+        location.href = "/table/generate/code?tableNames=" + tableNames.join(",") + "&package_=" + package + "&prefix=" + prefix;
+
     }
 
 </script>

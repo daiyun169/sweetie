@@ -4,8 +4,10 @@ import com.dr.sweetie.domain.DatabaseDO;
 import com.dr.sweetie.domain.TableColumnInfoDO;
 import com.dr.sweetie.domain.TableInfoDO;
 import com.dr.sweetie.domain.TableInsertReq;
+import com.dr.sweetie.utils.CodeUtils;
 import com.dr.sweetie.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
@@ -13,8 +15,10 @@ import org.jooq.impl.SQLDataType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.zip.ZipOutputStream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -51,6 +55,19 @@ public class TableService {
         List<TableInfoDO> tableInfoDOList = dslContext.fetch(sql).stream()
                 .map(record -> record.into(TableInfoDO.class)).collect(toList());
         return tableInfoDOList;
+    }
+
+    /**
+     * 查询获取表信息
+     *
+     * @param tableName
+     * @return
+     */
+    public TableInfoDO getTableInfo(String tableName) {
+        SQL sql = DSL.sql("select table_name tableName, table_comment tableComment from information_schema.tables \r\n"
+                + "	where table_schema = (select database()) and table_name = " + tableName);
+        TableInfoDO tableInfoDO = dslContext.fetchOne(sql).into(TableInfoDO.class);
+        return tableInfoDO;
     }
 
     /**
@@ -159,27 +176,35 @@ public class TableService {
         return DSL.field(name, dataType, comment);
     }
 
-//    public List<Map<String, Object>> list() {
-//        List<Map<String, Object>> list = generatorMapper.list();
-//        return list;
-//    }
-//
-//    public byte[] generatorCode(String[] tableNames) {
-//
-//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//
-//        ZipOutputStream zip = new ZipOutputStream(outputStream);
-//
-//        for (String tableName : tableNames) {
-//            //查询表信息
-//            Map<String, String> table = generatorMapper.get(tableName);
-//            //查询列信息
-//            List<Map<String, String>> columns = generatorMapper.listColumns(tableName);
-//            //生成代码
-//            GenUtils.generatorCode(table, columns, zip);
-//        }
-//        IOUtils.closeQuietly(zip);
-//        return outputStream.toByteArray();
-//    }
+    /**
+     * 代码生成
+     *
+     * @param package_
+     * @param prefix
+     * @param tableNames
+     * @return
+     */
+    public byte[] generatorCode(String package_, String prefix, String[] tableNames) {
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+             ZipOutputStream zip = new ZipOutputStream(outputStream)) {
+            for (String tableName : tableNames) {
+                // 查询表信息
+                TableInfoDO tableInfo = this.getTableInfo(tableName);
+                // 查询列信息
+                List<TableColumnInfoDO> columns = this.getTableColumn(tableName);
+
+                //生成代码
+                CodeUtils.generatorCode(package_, prefix, tableInfo, columns, zip);
+            }
+
+            return outputStream.toByteArray();
+
+        } catch (Exception e) {
+            log.error("", e);
+        }
+
+        return null;
+    }
 
 }

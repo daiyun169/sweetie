@@ -101,11 +101,16 @@ public class TableController {
      * @param tableNames
      * @throws IOException
      */
-    @PostMapping(value = "/table/generate/code", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseBody
-    public R batchCode(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "tableNames[]") List<String> tableNames) throws IOException {
+    @GetMapping(value = "/table/generate/code")
+    public void batchCode(HttpServletRequest request, HttpServletResponse response,
+                          @RequestParam String tableNames,
+                          @RequestParam String package_,
+                          @RequestParam String prefix) throws IOException {
 
-        System.out.println(tableNames);
+//        String[] tableNames = tableNames.split(",");
+        System.out.println(tableNames + package_ + prefix);
+
+//        tableService.ge
 
         //        String[] tableNames = new String[]{};
 //        tableNames = JSON.parseArray(tables).toArray(tableNames);
@@ -116,9 +121,6 @@ public class TableController {
 //        response.setContentType("application/octet-stream; charset=UTF-8");
 //
 //        IOUtils.write(data, response.getOutputStream());
-
-        return R.ok();
-
 
     }
 

@@ -25,4 +25,8 @@ public class TableInfoDO {
 
     private String engine;
 
+    private String classNameCapCase;
+
+    private String classNameLowCase;
+
 }

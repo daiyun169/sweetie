@@ -27,4 +27,10 @@ public class TableColumnInfoDO {
 
     private String extra;
 
+    private String propertyDataType;
+
+    private String propertyNameCapCase;
+
+    private String propertyNameLowCase;
+
 }

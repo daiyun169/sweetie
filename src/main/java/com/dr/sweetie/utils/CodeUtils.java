@@ -1,8 +1,10 @@
 package com.dr.sweetie.utils;
 
 
+import com.dr.sweetie.config.DataType;
 import com.dr.sweetie.domain.ColumnDO;
-import com.dr.sweetie.domain.TableDO;
+import com.dr.sweetie.domain.TableColumnInfoDO;
+import com.dr.sweetie.domain.TableInfoDO;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -21,156 +23,114 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- *
  * @author qewli12
  */
 public class CodeUtils {
 
-
     /**
-     * 代码模版路径
-     * @return
+     * 根据表信息生成代码
+     *
+     * @param package_
+     * @param prefix
+     * @param table
+     * @param columns
+     * @param zip
      */
-    public static List<String> getTemplates() {
-        List<String> templates = new ArrayList<String>();
-        templates.add("templates/common/generator/domain.java.vm");
-        templates.add("templates/common/generator/Dao.java.vm");
-        //templates.add("templates/common/generator/Mapper.java.vm");
-        templates.add("templates/common/generator/Mapper.xml.vm");
-        templates.add("templates/common/generator/Service.java.vm");
-        templates.add("templates/common/generator/ServiceImpl.java.vm");
-        templates.add("templates/common/generator/Controller.java.vm");
-        templates.add("templates/common/generator/list.html.vm");
-        templates.add("templates/common/generator/add.html.vm");
-        templates.add("templates/common/generator/edit.html.vm");
-        templates.add("templates/common/generator/list.js.vm");
-        templates.add("templates/common/generator/add.js.vm");
-        templates.add("templates/common/generator/edit.js.vm");
-        //templates.add("templates/common/generator/menu.sql.vm");
-        return templates;
-    }
+    public static void generatorCode(String package_, String prefix, TableInfoDO table, List<TableColumnInfoDO> columns, ZipOutputStream zip) {
 
-    /**
-     * 生成代码
-     */
+        // java class name
+        String className = getClassName(table.getTableName(), prefix);
+        table.setClassNameCapCase(className);
+        table.setClassNameLowCase(StringUtils.uncapitalize(className));
 
+        TableColumnInfoDO pk = null;
 
-    public static void generatorCode(Map<String, String> table,
-                                     List<Map<String, String>> columns, ZipOutputStream zip) {
-        //配置信息
-        Configuration config = getConfig();
-        //表信息
-        TableDO tableDO = new TableDO();
-        tableDO.setTableName(table.get("tableName"));
-        tableDO.setComments(table.get("tableComment"));
-        //表名转换成Java类名
-        String className = tableToJava(tableDO.getTableName(), config.getString("tablePrefix"), config.getString("autoRemovePre"));
-        tableDO.setClassNameCapCase(className);
-        tableDO.setClassNameLowCase(StringUtils.uncapitalize(className));
-
-        //列信息
-        List<ColumnDO> columsList = new ArrayList<>();
-        for (Map<String, String> column : columns) {
-            ColumnDO columnDO = new ColumnDO();
-            columnDO.setColumnName(column.get("columnName"));
-            columnDO.setDataType(column.get("dataType"));
-            columnDO.setComments(column.get("columnComment"));
-            columnDO.setExtra(column.get("extra"));
-
-            //列名转换成Java属性名
-            String attrName = columnToJava(columnDO.getColumnName());
-            columnDO.setAttrName(attrName);
-            columnDO.setAttrname(StringUtils.uncapitalize(attrName));
-
-            //列的数据类型，转换成Java类型
-            String attrType = config.getString(columnDO.getDataType(), "unknowType");
-            columnDO.setAttrType(attrType);
-
+        // java class property
+        for (TableColumnInfoDO column : columns) {
+            String propertyName = getColumnName(column.getColumnName());
+            column.setPropertyNameCapCase(propertyName);
+            column.setPropertyNameLowCase(StringUtils.uncapitalize(propertyName));
+            column.setPropertyDataType(DataType.getDataType().get(column.getDataType()));
             //是否主键
-            if ("PRI".equalsIgnoreCase(column.get("columnKey")) && tableDO.getPk() == null) {
-                tableDO.setPk(columnDO);
+            if ("PRI".equalsIgnoreCase(column.getColumnKey())) {
+                if (pk != null) {
+                    throw new RuntimeException("发现多个主键");
+                }
+                pk = column;
             }
-
-            columsList.add(columnDO);
-        }
-        tableDO.setColumns(columsList);
-
-        //没主键，则第一个字段为主键
-        if (tableDO.getPk() == null) {
-            tableDO.setPk(tableDO.getColumns().get(0));
         }
 
-        //设置velocity资源加载器
+        if (pk == null) {
+            throw new RuntimeException("没有发现主键");
+        }
+
+        // 设置velocity资源加载器
         Properties prop = new Properties();
         prop.put("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
         Velocity.init(prop);
 
-        //封装模板数据
+        // 封装模板数据
         Map<String, Object> map = new HashMap<>(16);
-        map.put("tableName", tableDO.getTableName());
-        map.put("comments", tableDO.getComments());
-        map.put("pk", tableDO.getPk());
-        map.put("className", tableDO.getClassNameCapCase());
-        map.put("classname", tableDO.getClassNameLowCase());
-        map.put("pathName", config.getString("package").substring(config.getString("package").lastIndexOf(".") + 1));
-        map.put("columns", tableDO.getColumns());
-        map.put("package", config.getString("package"));
-        map.put("author", config.getString("author"));
-        map.put("email", config.getString("email"));
-        map.put("datetime", DateUtils.format(new Date(), DateUtils.DATE_TIME_PATTERN));
-        VelocityContext context = new VelocityContext(map);
+        map.put("table", table);
+        map.put("columns", columns);
+        map.put("pk", pk);
+        map.put("pathName", package_);
+        map.put("package", package_);
 
-        //获取模板列表
-        List<String> templates = getTemplates();
-        for (String template : templates) {
-            //渲染模板
-            StringWriter sw = new StringWriter();
-            Template tpl = Velocity.getTemplate(template, "UTF-8");
-            tpl.merge(context, sw);
-
-            try {
-                //添加到zip
-                zip.putNextEntry(new ZipEntry(getFileName(template, tableDO.getClassNameLowCase(), tableDO.getClassNameCapCase(), config.getString("package").substring(config.getString("package").lastIndexOf(".") + 1))));
-                IOUtils.write(sw.toString(), zip, "UTF-8");
-                IOUtils.closeQuietly(sw);
-                zip.closeEntry();
-            } catch (IOException e) {
-                throw new BDException("渲染模板失败，表名：" + tableDO.getTableName(), e);
-            }
-        }
+//        VelocityContext context = new VelocityContext(map);
+//
+//        //获取模板列表
+//        List<String> templates = getTemplates();
+//        for (String template : templates) {
+//            //渲染模板
+//            StringWriter sw = new StringWriter();
+//            Template tpl = Velocity.getTemplate(template, "UTF-8");
+//            tpl.merge(context, sw);
+//
+//            try {
+//                //添加到zip
+//                zip.putNextEntry(new ZipEntry(getFileName(template, table.getClassNameLowCase(), table.getClassNameCapCase(), config.getString("package").substring(config.getString("package").lastIndexOf(".") + 1))));
+//                IOUtils.write(sw.toString(), zip, "UTF-8");
+//                IOUtils.closeQuietly(sw);
+//                zip.closeEntry();
+//            } catch (IOException e) {
+//                throw new SweeitsException("渲染模板失败，表名：" + tableDO.getTableName(), e);
+//            }
+//        }
     }
 
-
     /**
-     * 列名转换成Java属性名
+     * 获得驼峰命名
+     *
+     * @param columnName
+     * @return
      */
-    public static String columnToJava(String columnName) {
+    public static String getHumpName(String columnName) {
         return WordUtils.capitalizeFully(columnName, new char[]{'_'}).replace("_", "");
     }
 
     /**
-     * 表名转换成Java类名
+     * 获得类名
+     *
+     * @param tableName
+     * @param prefix
+     * @return
      */
-    public static String tableToJava(String tableName, String tablePrefix, String autoRemovePre) {
-        if ("true".equals(autoRemovePre)) {
-            tableName = tableName.substring(tableName.indexOf("_") + 1);
+    public static String getClassName(String tableName, String prefix) {
+        if (StringUtils.isNotBlank(prefix)) {
+            tableName = tableName.replace(prefix, "");
         }
-        if (StringUtils.isNotBlank(tablePrefix)) {
-            tableName = tableName.replace(tablePrefix, "");
-        }
-
-        return columnToJava(tableName);
+        return getHumpName(tableName);
     }
 
     /**
-     * 获取配置信息
+     * 获得列名
+     *
+     * @param columnName
+     * @return
      */
-    public static Configuration getConfig() {
-        try {
-            return new PropertiesConfiguration("generator.properties");
-        } catch (ConfigurationException e) {
-            throw new BDException("获取配置文件失败，", e);
-        }
+    public static String getColumnName(String columnName) {
+        return getHumpName(columnName);
     }
 
     /**
@@ -237,4 +197,29 @@ public class CodeUtils {
 
         return null;
     }
+
+    /**
+     * 代码模版路径
+     *
+     * @return
+     */
+    public static List<String> getTemplates() {
+        List<String> templates = new ArrayList<String>();
+        templates.add("templates/common/generator/domain.java.vm");
+        templates.add("templates/common/generator/Dao.java.vm");
+        //templates.add("templates/common/generator/Mapper.java.vm");
+        templates.add("templates/common/generator/Mapper.xml.vm");
+        templates.add("templates/common/generator/Service.java.vm");
+        templates.add("templates/common/generator/ServiceImpl.java.vm");
+        templates.add("templates/common/generator/Controller.java.vm");
+        templates.add("templates/common/generator/list.html.vm");
+        templates.add("templates/common/generator/add.html.vm");
+        templates.add("templates/common/generator/edit.html.vm");
+        templates.add("templates/common/generator/list.js.vm");
+        templates.add("templates/common/generator/add.js.vm");
+        templates.add("templates/common/generator/edit.js.vm");
+        //templates.add("templates/common/generator/menu.sql.vm");
+        return templates;
+    }
+
 }
