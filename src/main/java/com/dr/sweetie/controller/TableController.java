@@ -4,18 +4,23 @@ import com.dr.sweetie.domain.TableColumnInfoDO;
 import com.dr.sweetie.domain.TableInfoDO;
 import com.dr.sweetie.domain.TableInsertReq;
 import com.dr.sweetie.service.TableService;
+import com.dr.sweetie.utils.CodeUtils;
 import com.dr.sweetie.utils.R;
+import com.dr.sweetie.utils.SweeitsException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author qewli12
@@ -103,25 +108,15 @@ public class TableController {
      */
     @GetMapping(value = "/table/generate/code")
     public void batchCode(HttpServletRequest request, HttpServletResponse response,
-                          @RequestParam String tableNames,
+                          @RequestParam String[] tableNames,
                           @RequestParam String package_,
                           @RequestParam String prefix) throws IOException {
-
-//        String[] tableNames = tableNames.split(",");
-        System.out.println(tableNames + package_ + prefix);
-
-//        tableService.ge
-
-        //        String[] tableNames = new String[]{};
-//        tableNames = JSON.parseArray(tables).toArray(tableNames);
-//        byte[] data = tableService.generatorCode(tableNames);
-//        response.reset();
-//        response.setHeader("Content-Disposition", "attachment; filename=\"bootdo.zip\"");
-//        response.addHeader("Content-Length", "" + data.length);
-//        response.setContentType("application/octet-stream; charset=UTF-8");
-//
-//        IOUtils.write(data, response.getOutputStream());
-
+        byte[] bytes = tableService.generatorCode(package_, prefix, tableNames);
+        response.reset();
+        response.setHeader("Content-Disposition", "attachment; filename=\"src.zip\"");
+        response.addHeader("Content-Length", "" + bytes.length);
+        response.setContentType("application/octet-stream; charset=UTF-8");
+        IOUtils.write(bytes, response.getOutputStream());
     }
 
 }

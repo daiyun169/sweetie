@@ -2,18 +2,15 @@ package com.dr.sweetie.utils;
 
 
 import com.dr.sweetie.config.DataType;
-import com.dr.sweetie.domain.ColumnDO;
 import com.dr.sweetie.domain.TableColumnInfoDO;
 import com.dr.sweetie.domain.TableInfoDO;
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,7 +61,7 @@ public class CodeUtils {
             throw new RuntimeException("没有发现主键");
         }
 
-        // 设置velocity资源加载器
+        // 设置 velocity 资源加载器
         Properties prop = new Properties();
         prop.put("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
         Velocity.init(prop);
@@ -77,26 +74,26 @@ public class CodeUtils {
         map.put("pathName", package_);
         map.put("package", package_);
 
-//        VelocityContext context = new VelocityContext(map);
-//
-//        //获取模板列表
-//        List<String> templates = getTemplates();
-//        for (String template : templates) {
-//            //渲染模板
-//            StringWriter sw = new StringWriter();
-//            Template tpl = Velocity.getTemplate(template, "UTF-8");
-//            tpl.merge(context, sw);
-//
-//            try {
-//                //添加到zip
-//                zip.putNextEntry(new ZipEntry(getFileName(template, table.getClassNameLowCase(), table.getClassNameCapCase(), config.getString("package").substring(config.getString("package").lastIndexOf(".") + 1))));
-//                IOUtils.write(sw.toString(), zip, "UTF-8");
-//                IOUtils.closeQuietly(sw);
-//                zip.closeEntry();
-//            } catch (IOException e) {
-//                throw new SweeitsException("渲染模板失败，表名：" + tableDO.getTableName(), e);
-//            }
-//        }
+        VelocityContext context = new VelocityContext(map);
+
+        //获取模板列表
+        List<String> templates = getTemplates();
+        for (String template : templates) {
+            //渲染模板
+            StringWriter sw = new StringWriter();
+            Template tpl = Velocity.getTemplate(template, "UTF-8");
+            tpl.merge(context, sw);
+
+            try {
+                //添加到zip
+                zip.putNextEntry(new ZipEntry(getFileName(template, table.getClassNameLowCase(), table.getClassNameCapCase(), package_.substring(package_.lastIndexOf(".") + 1))));
+                IOUtils.write(sw.toString(), zip, "UTF-8");
+                IOUtils.closeQuietly(sw);
+                zip.closeEntry();
+            } catch (IOException e) {
+                throw new SweeitsException("渲染模板失败，模版名称：" + template, e);
+            }
+        }
     }
 
     /**
@@ -137,8 +134,9 @@ public class CodeUtils {
      * 获取文件名
      */
     public static String getFileName(String template, String classname, String className, String packageName) {
+
         String packagePath = "main" + File.separator + "java" + File.separator;
-        //String modulesname=config.getString("packageName");
+
         if (StringUtils.isNotBlank(packageName)) {
             packagePath += packageName.replace(".", File.separator) + File.separator;
         }
@@ -147,52 +145,20 @@ public class CodeUtils {
             return packagePath + "domain" + File.separator + className + "DO.java";
         }
 
-        if (template.contains("Dao.java.vm")) {
+        if (template.contains("dao.java.vm")) {
             return packagePath + "dao" + File.separator + className + "Dao.java";
         }
 
-        if (template.contains("Service.java.vm")) {
+        if (template.contains("service.java.vm")) {
             return packagePath + "service" + File.separator + className + "Service.java";
         }
 
-        if (template.contains("ServiceImpl.java.vm")) {
+        if (template.contains("serviceimpl.java.vm")) {
             return packagePath + "service" + File.separator + "impl" + File.separator + className + "ServiceImpl.java";
         }
 
-        if (template.contains("Controller.java.vm")) {
+        if (template.contains("controller.java.vm")) {
             return packagePath + "controller" + File.separator + className + "Controller.java";
-        }
-
-        if (template.contains("Mapper.xml.vm")) {
-            return "main" + File.separator + "resources" + File.separator + "mapper" + File.separator + packageName + File.separator + className + "Mapper.xml";
-        }
-
-        if (template.contains("list.html.vm")) {
-            return "main" + File.separator + "resources" + File.separator + "templates" + File.separator
-                    + packageName + File.separator + classname + File.separator + classname + ".html";
-            //				+ "modules" + File.separator + "generator" + File.separator + className.toLowerCase() + ".html";
-        }
-        if (template.contains("add.html.vm")) {
-            return "main" + File.separator + "resources" + File.separator + "templates" + File.separator
-                    + packageName + File.separator + classname + File.separator + "add.html";
-        }
-        if (template.contains("edit.html.vm")) {
-            return "main" + File.separator + "resources" + File.separator + "templates" + File.separator
-                    + packageName + File.separator + classname + File.separator + "edit.html";
-        }
-
-        if (template.contains("list.js.vm")) {
-            return "main" + File.separator + "resources" + File.separator + "static" + File.separator + "js" + File.separator
-                    + "appjs" + File.separator + packageName + File.separator + classname + File.separator + classname + ".js";
-            //		+ "modules" + File.separator + "generator" + File.separator + className.toLowerCase() + ".js";
-        }
-        if (template.contains("add.js.vm")) {
-            return "main" + File.separator + "resources" + File.separator + "static" + File.separator + "js" + File.separator
-                    + "appjs" + File.separator + packageName + File.separator + classname + File.separator + "add.js";
-        }
-        if (template.contains("edit.js.vm")) {
-            return "main" + File.separator + "resources" + File.separator + "static" + File.separator + "js" + File.separator
-                    + "appjs" + File.separator + packageName + File.separator + classname + File.separator + "edit.js";
         }
 
         return null;
@@ -205,20 +171,11 @@ public class CodeUtils {
      */
     public static List<String> getTemplates() {
         List<String> templates = new ArrayList<String>();
-        templates.add("templates/common/generator/domain.java.vm");
-        templates.add("templates/common/generator/Dao.java.vm");
-        //templates.add("templates/common/generator/Mapper.java.vm");
-        templates.add("templates/common/generator/Mapper.xml.vm");
-        templates.add("templates/common/generator/Service.java.vm");
-        templates.add("templates/common/generator/ServiceImpl.java.vm");
-        templates.add("templates/common/generator/Controller.java.vm");
-        templates.add("templates/common/generator/list.html.vm");
-        templates.add("templates/common/generator/add.html.vm");
-        templates.add("templates/common/generator/edit.html.vm");
-        templates.add("templates/common/generator/list.js.vm");
-        templates.add("templates/common/generator/add.js.vm");
-        templates.add("templates/common/generator/edit.js.vm");
-        //templates.add("templates/common/generator/menu.sql.vm");
+        templates.add("templates/vm/domain.java.vm");
+        templates.add("templates/vm/dao.java.vm");
+        templates.add("templates/vm/service.java.vm");
+        templates.add("templates/vm/serviceimpl.java.vm");
+        templates.add("templates/vm/controller.java.vm");
         return templates;
     }
 

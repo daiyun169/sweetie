@@ -16,8 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.zip.ZipOutputStream;
 
 import static java.util.stream.Collectors.toList;
@@ -65,7 +66,7 @@ public class TableService {
      */
     public TableInfoDO getTableInfo(String tableName) {
         SQL sql = DSL.sql("select table_name tableName, table_comment tableComment from information_schema.tables \r\n"
-                + "	where table_schema = (select database()) and table_name = " + tableName);
+                + "	where table_schema = (select database()) and table_name = '" + tableName + "'");
         TableInfoDO tableInfoDO = dslContext.fetchOne(sql).into(TableInfoDO.class);
         return tableInfoDO;
     }
@@ -185,9 +186,8 @@ public class TableService {
      * @return
      */
     public byte[] generatorCode(String package_, String prefix, String[] tableNames) {
-
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             ZipOutputStream zip = new ZipOutputStream(outputStream)) {
+             ZipOutputStream zip = new ZipOutputStream(outputStream)){
             for (String tableName : tableNames) {
                 // 查询表信息
                 TableInfoDO tableInfo = this.getTableInfo(tableName);
@@ -197,13 +197,11 @@ public class TableService {
                 //生成代码
                 CodeUtils.generatorCode(package_, prefix, tableInfo, columns, zip);
             }
-
+            IOUtils.closeQuietly(zip);
             return outputStream.toByteArray();
-
         } catch (Exception e) {
             log.error("", e);
         }
-
         return null;
     }
 
