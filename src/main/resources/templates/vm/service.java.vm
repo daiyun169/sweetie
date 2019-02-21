@@ -1,1 +1,94 @@
-123
+package com.huinong.truffle.service;
+
+import com.github.pagehelper.PageHelper;
+import com.huinong.framework.autoconfigure.mybatis.MybatisPageValue;
+import com.huinong.truffle.dao.StudentDao;
+import com.huinong.truffle.domain.Student;
+import com.huinong.truffle.entity.req.StudentAddRequest;
+import com.huinong.truffle.entity.req.StudentQueryRequest;
+import com.huinong.truffle.entity.req.StudentUpdateRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+
+/**
+ * @author qewli12
+ * 2019/2/20 10:40
+ */
+@Slf4j
+@Service
+public class StudentService {
+
+    @Autowired
+    private StudentDao studentDao;
+
+    /**
+     * 新增
+     *
+     * @param studentAddRequest
+     * @return
+     */
+    public Student save(StudentAddRequest studentAddRequest) {
+        Student student = new Student();
+        student.setStuName(studentAddRequest.getStuName());
+        student.setStuAge(studentAddRequest.getStuAge());
+        student.setStuBirthday(studentAddRequest.getStuBirthday());
+        student.setGender(studentAddRequest.getGender());
+        student.setCreateTime(new Date());
+        studentDao.insertSelective(student);
+        return student;
+    }
+
+    /**
+     * 修改
+     *
+     * @param studentUpdateRequest
+     * @return
+     */
+    public int update(StudentUpdateRequest studentUpdateRequest) {
+        Student student = new Student();
+        student.setId(studentUpdateRequest.getId());
+        student.setStuName(studentUpdateRequest.getStuName());
+        student.setStuAge(studentUpdateRequest.getStuAge());
+        student.setStuBirthday(studentUpdateRequest.getStuBirthday());
+        student.setGender(studentUpdateRequest.getGender());
+        student.setUpdateTime(new Date());
+        return studentDao.updateByPrimaryKeySelective(student);
+    }
+
+    /**
+     * 删除
+     *
+     * @param id
+     * @return
+     */
+    public int remove(Long id) {
+        return studentDao.deleteByPrimaryKey(id);
+    }
+
+    /**
+     * 查询
+     *
+     * @param id
+     * @return
+     */
+    public Student get(Long id) {
+        return studentDao.selectByPrimaryKey(id);
+    }
+
+    /**
+     * 列表
+     *
+     * @param studentQueryRequest
+     * @return
+     */
+    public MybatisPageValue<Student> list(StudentQueryRequest studentQueryRequest) {
+        PageHelper.startPage(studentQueryRequest.getPageNum(), studentQueryRequest.getPageSize());
+        List<Student> list = studentDao.list(studentQueryRequest);
+        return new MybatisPageValue<>(list);
+    }
+
+}

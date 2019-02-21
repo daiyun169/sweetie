@@ -1,1 +1,102 @@
-123
+package com.huinong.truffle.domain;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * @author
+ */
+public class Student implements Serializable {
+    /**
+     * 主键
+     */
+    private Long id;
+
+    /**
+     * 学生姓名
+     */
+    private String stuName;
+
+    /**
+     * 学生年龄
+     */
+    private Byte stuAge;
+
+    /**
+     * 学生生日
+     */
+    private Date stuBirthday;
+
+    /**
+     * 学生性别
+     */
+    private Boolean gender;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
+
+    private static final long serialVersionUID = 1L;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getStuName() {
+        return stuName;
+    }
+
+    public void setStuName(String stuName) {
+        this.stuName = stuName;
+    }
+
+    public Byte getStuAge() {
+        return stuAge;
+    }
+
+    public void setStuAge(Byte stuAge) {
+        this.stuAge = stuAge;
+    }
+
+    public Date getStuBirthday() {
+        return stuBirthday;
+    }
+
+    public void setStuBirthday(Date stuBirthday) {
+        this.stuBirthday = stuBirthday;
+    }
+
+    public Boolean getGender() {
+        return gender;
+    }
+
+    public void setGender(Boolean gender) {
+        this.gender = gender;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+}

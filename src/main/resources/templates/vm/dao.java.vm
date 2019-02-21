@@ -1,1 +1,27 @@
-123
+package com.huinong.truffle.dao;
+
+import com.huinong.truffle.domain.Student;
+import com.huinong.truffle.entity.req.StudentQueryRequest;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface StudentDao {
+
+    int deleteByPrimaryKey(Long id);
+
+    int insert(Student record);
+
+    int insertSelective(Student record);
+
+    Student selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(Student record);
+
+    int updateByPrimaryKey(Student record);
+
+    List<Student> list(@Param("studentQueryRequest") StudentQueryRequest studentQueryRequest);
+
+}

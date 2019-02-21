@@ -1,1 +1,71 @@
-123
+package com.huinong.truffle.controller;
+
+import com.huinong.framework.autoconfigure.eureka.HnRequestMetadata;
+import com.huinong.framework.autoconfigure.mybatis.MybatisPageValue;
+import com.huinong.framework.autoconfigure.web.BaseResult;
+import com.huinong.truffle.domain.Student;
+import com.huinong.truffle.entity.req.StudentAddRequest;
+import com.huinong.truffle.entity.req.StudentQueryRequest;
+import com.huinong.truffle.entity.req.StudentUpdateRequest;
+import com.huinong.truffle.service.StudentService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
+/**
+ * @author qewli12
+ * 2019/2/20 10:39
+ */
+@Api(tags = {"学生管理"})
+@Slf4j
+@RestController
+@RequestMapping("/example")
+@Validated
+public class StudentController {
+
+    @Autowired
+    private StudentService studentService;
+
+    @ApiOperation(value = "查询", response = Student.class)
+    @HnRequestMetadata(internal = true, roles = {"logged"})
+    @PostMapping(value = "/student/get")
+    public BaseResult<Student> get(@NotNull @Min(1) @RequestParam Long id) {
+        return BaseResult.success(studentService.get(id));
+    }
+
+    @ApiOperation(value = "删除", response = Integer.class)
+    @HnRequestMetadata(internal = true, roles = {"logged"})
+    @PostMapping("/student/del")
+    public BaseResult<Integer> del(@NotNull @Min(1) @RequestParam Long id) {
+        return BaseResult.success(studentService.remove(id));
+    }
+
+    @ApiOperation(value = "新增")
+    @HnRequestMetadata(internal = true, roles = {"logged"})
+    @PostMapping("/student/add")
+    public BaseResult<Void> add(@Validated @RequestBody StudentAddRequest studentAddRequest) {
+        studentService.save(studentAddRequest);
+        return BaseResult.success();
+    }
+
+    @ApiOperation(value = "修改", response = Integer.class)
+    @HnRequestMetadata(internal = true, roles = {"logged"})
+    @PostMapping("/student/update")
+    public BaseResult<Integer> update(@Validated @RequestBody StudentUpdateRequest studentUpdateRequest) {
+        return BaseResult.success(studentService.update(studentUpdateRequest));
+    }
+
+    @ApiOperation(value = "列表", response = MybatisPageValue.class)
+    @HnRequestMetadata(internal = true, roles = {"logged"})
+    @PostMapping("/student/list")
+    public BaseResult<MybatisPageValue<Student>> list(@Validated @RequestBody StudentQueryRequest studentQueryRequest) {
+        return BaseResult.success(studentService.list(studentQueryRequest));
+    }
+
+}

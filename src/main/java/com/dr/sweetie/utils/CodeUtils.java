@@ -152,10 +152,6 @@ public class CodeUtils {
             return packagePath + "service" + File.separator + className + "Service.java";
         }
 
-        if (template.contains("serviceimpl.java.vm")) {
-            return packagePath + "service" + File.separator + "impl" + File.separator + className + "ServiceImpl.java";
-        }
-
         if (template.contains("controller.java.vm")) {
             return packagePath + "controller" + File.separator + className + "Controller.java";
         }
@@ -173,7 +169,6 @@ public class CodeUtils {
         templates.add("templates/vm/domain.java.vm");
         templates.add("templates/vm/dao.java.vm");
         templates.add("templates/vm/service.java.vm");
-        templates.add("templates/vm/serviceimpl.java.vm");
         templates.add("templates/vm/controller.java.vm");
         return templates;
     }
