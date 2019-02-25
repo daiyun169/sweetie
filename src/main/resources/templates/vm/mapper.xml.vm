@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huinong.truffle.dao.StudentDao">
+
+  <resultMap id="BaseResultMap" type="com.huinong.truffle.domain.Student">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="stu_name" jdbcType="VARCHAR" property="stuName" />
+    <result column="stu_age" jdbcType="TINYINT" property="stuAge" />
+    <result column="stu_birthday" jdbcType="TIMESTAMP" property="stuBirthday" />
+    <result column="gender" jdbcType="BIT" property="gender" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, stu_name, stu_age, stu_birthday, gender, create_time, update_time
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from student
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="list" resultType="com.huinong.truffle.domain.Student">
+    select
+    <include refid="Base_Column_List" />
+    from student
+    <where>
+      <if test="studentQueryRequest.id != null">and id = #{studentQueryRequest.id}</if>
+      <if test="studentQueryRequest.stuName != null">and stu_name = #{studentQueryRequest.stuName}</if>
+      <if test="studentQueryRequest.stuAge != null">and stu_age = #{studentQueryRequest.stuAge}</if>
+      <if test="studentQueryRequest.stuBirthday != null">and stu_birthday = #{studentQueryRequest.stuBirthday}</if>
+      <if test="studentQueryRequest.gender != null">and gender = #{studentQueryRequest.gender}</if>
+    </where>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from student
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" parameterType="com.huinong.truffle.domain.Student">
+    insert into student (id, stu_name, stu_age, 
+      stu_birthday, gender, create_time, update_time)
+    values (#{id,jdbcType=BIGINT}, #{stuName,jdbcType=VARCHAR}, #{stuAge,jdbcType=TINYINT}, 
+      #{stuBirthday,jdbcType=TIMESTAMP}, #{gender,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.huinong.truffle.domain.Student">
+    insert into student
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="stuName != null">
+        stu_name,
+      </if>
+      <if test="stuAge != null">
+        stu_age,
+      </if>
+      <if test="stuBirthday != null">
+        stu_birthday,
+      </if>
+      <if test="gender != null">
+        gender,
+      </if>
+        <if test="createTime != null">
+            create_time,
+        </if>
+        <if test="updateTime != null">
+            update_time,
+        </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="stuName != null">
+        #{stuName,jdbcType=VARCHAR},
+      </if>
+      <if test="stuAge != null">
+        #{stuAge,jdbcType=TINYINT},
+      </if>
+      <if test="stuBirthday != null">
+        #{stuBirthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gender != null">
+        #{gender,jdbcType=BIT},
+      </if>
+        <if test="createTime != null">
+            #{createTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="updateTime != null">
+            #{updateTime,jdbcType=TIMESTAMP},
+        </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.huinong.truffle.domain.Student">
+    update student
+    <set>
+      <if test="stuName != null">
+        stu_name = #{stuName,jdbcType=VARCHAR},
+      </if>
+      <if test="stuAge != null">
+        stu_age = #{stuAge,jdbcType=TINYINT},
+      </if>
+      <if test="stuBirthday != null">
+        stu_birthday = #{stuBirthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=BIT},
+      </if>
+        <if test="createTime != null">
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="updateTime != null">
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+        </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.huinong.truffle.domain.Student">
+    update student
+    set stu_name = #{stuName,jdbcType=VARCHAR},
+      stu_age = #{stuAge,jdbcType=TINYINT},
+      stu_birthday = #{stuBirthday,jdbcType=TIMESTAMP},
+      gender = #{gender,jdbcType=BIT},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>
