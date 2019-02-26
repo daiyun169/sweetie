@@ -1,0 +1,27 @@
+package ${packagePrefix}.entity.req;
+
+import com.huinong.truffle.entity.PageRequest;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
+
+/**
+ * @author qewli12
+ * 2019/2/21 10:19
+ */
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ${table.classNameCapCase}QueryRequest extends PageRequest {
+
+#foreach ($column in $columns)
+    @ApiModelProperty(value = "$column.columnComment")
+    private $column.propertyDataType $column.propertyNameLowCase;
+
+#end
+}

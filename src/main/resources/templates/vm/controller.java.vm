@@ -1,13 +1,13 @@
-package com.huinong.truffle.controller;
+package ${packagePrefix}.controller;
 
 import com.huinong.framework.autoconfigure.eureka.HnRequestMetadata;
 import com.huinong.framework.autoconfigure.mybatis.MybatisPageValue;
 import com.huinong.framework.autoconfigure.web.BaseResult;
-import com.huinong.truffle.domain.Student;
-import com.huinong.truffle.entity.req.StudentAddRequest;
-import com.huinong.truffle.entity.req.StudentQueryRequest;
-import com.huinong.truffle.entity.req.StudentUpdateRequest;
-import com.huinong.truffle.service.StudentService;
+import ${packagePrefix}.domain.${table.classNameCapCase};
+import ${packagePrefix}.entity.req.${table.classNameCapCase}AddRequest;
+import ${packagePrefix}.entity.req.${table.classNameCapCase}QueryRequest;
+import ${packagePrefix}.entity.req.${table.classNameCapCase}UpdateRequest;
+import ${packagePrefix}.service.${table.classNameCapCase}Service;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -22,50 +22,50 @@ import javax.validation.constraints.NotNull;
  * @author qewli12
  * 2019/2/20 10:39
  */
-@Api(tags = {"学生管理"})
+@Api(tags = {"${table.tableComment}"})
 @Slf4j
 @RestController
-@RequestMapping("/example")
+@RequestMapping("/${table.classNameLowCase}")
 @Validated
-public class StudentController {
+public class ${table.classNameCapCase}Controller {
 
     @Autowired
-    private StudentService studentService;
+    private ${table.classNameCapCase}Service ${table.classNameLowCase}Service;
 
-    @ApiOperation(value = "查询", response = Student.class)
+    @ApiOperation(value = "查询", response = ${table.classNameCapCase}.class)
     @HnRequestMetadata(internal = true, roles = {"logged"})
-    @PostMapping(value = "/student/get")
-    public BaseResult<Student> get(@NotNull @Min(1) @RequestParam Long id) {
-        return BaseResult.success(studentService.get(id));
+    @PostMapping(value = "/get")
+    public BaseResult<${table.classNameCapCase}> get(@NotNull @Min(1) @RequestParam Long id) {
+        return BaseResult.success(${table.classNameLowCase}Service.get(id));
     }
 
     @ApiOperation(value = "删除", response = Integer.class)
     @HnRequestMetadata(internal = true, roles = {"logged"})
-    @PostMapping("/student/del")
+    @PostMapping("/del")
     public BaseResult<Integer> del(@NotNull @Min(1) @RequestParam Long id) {
-        return BaseResult.success(studentService.remove(id));
+        return BaseResult.success(${table.classNameLowCase}Service.remove(id));
     }
 
     @ApiOperation(value = "新增")
     @HnRequestMetadata(internal = true, roles = {"logged"})
-    @PostMapping("/student/add")
-    public BaseResult<Void> add(@Validated @RequestBody StudentAddRequest studentAddRequest) {
-        studentService.save(studentAddRequest);
+    @PostMapping("/add")
+    public BaseResult<Void> add(@Validated @RequestBody ${table.classNameCapCase}AddRequest ${table.classNameLowCase}AddRequest) {
+        ${table.classNameLowCase}Service.save(${table.classNameLowCase}AddRequest);
         return BaseResult.success();
     }
 
     @ApiOperation(value = "修改", response = Integer.class)
     @HnRequestMetadata(internal = true, roles = {"logged"})
-    @PostMapping("/student/update")
-    public BaseResult<Integer> update(@Validated @RequestBody StudentUpdateRequest studentUpdateRequest) {
-        return BaseResult.success(studentService.update(studentUpdateRequest));
+    @PostMapping("/update")
+    public BaseResult<Integer> update(@Validated @RequestBody ${table.classNameCapCase}UpdateRequest ${table.classNameLowCase}UpdateRequest) {
+        return BaseResult.success(${table.classNameLowCase}Service.update(${table.classNameLowCase}UpdateRequest));
     }
 
     @ApiOperation(value = "列表", response = MybatisPageValue.class)
     @HnRequestMetadata(internal = true, roles = {"logged"})
-    @PostMapping("/student/list")
-    public BaseResult<MybatisPageValue<Student>> list(@Validated @RequestBody StudentQueryRequest studentQueryRequest) {
-        return BaseResult.success(studentService.list(studentQueryRequest));
+    @PostMapping("/list")
+    public BaseResult<MybatisPageValue<${table.classNameCapCase}>> list(@Validated @RequestBody ${table.classNameCapCase}QueryRequest ${table.classNameLowCase}QueryRequest) {
+        return BaseResult.success(${table.classNameLowCase}Service.list(${table.classNameLowCase}QueryRequest));
     }
 
 }

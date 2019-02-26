@@ -4,6 +4,7 @@ package com.dr.sweetie.utils;
 import com.dr.sweetie.config.DataType;
 import com.dr.sweetie.domain.TableColumnInfoDO;
 import com.dr.sweetie.domain.TableInfoDO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
@@ -16,11 +17,13 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
 
 /**
  * @author qewli12
  */
+@Slf4j
 public class CodeUtils {
 
     /**
@@ -69,7 +72,7 @@ public class CodeUtils {
         Map<String, Object> map = new HashMap<>(4);
         map.put("table", table);
         map.put("columns", columns);
-        map.put("pk", pk);
+        map.put("primaryKey", pk);
         map.put("packagePrefix", package_);
 
         VelocityContext context = new VelocityContext(map);
@@ -82,9 +85,13 @@ public class CodeUtils {
             Template tpl = Velocity.getTemplate(template, "UTF-8");
             tpl.merge(context, sw);
             try {
-                //添加到zip
-                zip.putNextEntry(new ZipEntry(getFileName(template, table.getClassNameCapCase(), package_.substring(package_.lastIndexOf(".") + 1))));
-                IOUtils.write(sw.toString(), zip, "UTF-8");
+                try{
+                    //添加到zip
+                    zip.putNextEntry(new ZipEntry(getFileName(template, table.getClassNameCapCase(), package_.substring(package_.lastIndexOf(".") + 1))));
+                    IOUtils.write(sw.toString(), zip, "UTF-8");
+                }catch(ZipException e){
+                    log.error(e.getMessage());
+                }
                 IOUtils.closeQuietly(sw);
                 zip.closeEntry();
             } catch (IOException e) {
@@ -160,6 +167,22 @@ public class CodeUtils {
             return javaRoot + "controller" + File.separator + className + "Controller.java";
         }
 
+        if (template.contains("PageRequest.java.vm")) {
+            return javaRoot + "entity" + File.separator + "PageRequest.java";
+        }
+
+        if (template.contains("AddRequest.java.vm")) {
+            return javaRoot + "entity" + File.separator + "req" + File.separator + className + "AddRequest.java";
+        }
+
+        if (template.contains("UpdateRequest.java.vm")) {
+            return javaRoot + "entity" + File.separator + "req" + File.separator + className + "UpdateRequest.java";
+        }
+
+        if (template.contains("QueryRequest.java.vm")) {
+            return javaRoot + "entity" + File.separator + "req" + File.separator + className + "QueryRequest.java";
+        }
+
         return null;
     }
 
@@ -175,6 +198,10 @@ public class CodeUtils {
         templates.add("templates/vm/dao.java.vm");
         templates.add("templates/vm/service.java.vm");
         templates.add("templates/vm/controller.java.vm");
+        templates.add("templates/vm/PageRequest.java.vm");
+        templates.add("templates/vm/AddRequest.java.vm");
+        templates.add("templates/vm/UpdateRequest.java.vm");
+        templates.add("templates/vm/QueryRequest.java.vm");
         return templates;
     }
 

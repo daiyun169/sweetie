@@ -1,137 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.huinong.truffle.dao.StudentDao">
+<mapper namespace="${packagePrefix}.dao.${table.classNameCapCase}Dao">
 
-  <resultMap id="BaseResultMap" type="com.huinong.truffle.domain.Student">
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="stu_name" jdbcType="VARCHAR" property="stuName" />
-    <result column="stu_age" jdbcType="TINYINT" property="stuAge" />
-    <result column="stu_birthday" jdbcType="TIMESTAMP" property="stuBirthday" />
-    <result column="gender" jdbcType="BIT" property="gender" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  <resultMap id="BaseResultMap" type="${packagePrefix}.domain.${table.classNameCapCase}">
+#foreach($column in $columns)
+#if($column.columnKey == 'PRI')
+    <id column="${column.columnName}" jdbcType="${column.dataType.toUpperCase()}" property="${column.propertyNameLowCase}" />
+#else
+    <result column="${column.columnName}" jdbcType="${column.dataType.toUpperCase()}" property="${column.propertyNameLowCase}" />
+#end
+#end
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, stu_name, stu_age, stu_birthday, gender, create_time, update_time
+    #foreach($column in $columns)`$column.columnName`#if($velocityCount != $columns.size()),#end#end
+
   </sql>
 
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from student
-    where id = #{id,jdbcType=BIGINT}
+    from ${table.tableName}
+    where ${primaryKey.columnName} = #{${primaryKey.propertyNameLowCase},jdbcType=${primaryKey.dataType.toUpperCase()}}
   </select>
 
-  <select id="list" resultType="com.huinong.truffle.domain.Student">
+  <select id="list" resultType="${packagePrefix}.domain.${table.classNameCapCase}">
     select
     <include refid="Base_Column_List" />
-    from student
+    from ${table.tableName}
     <where>
-      <if test="studentQueryRequest.id != null">and id = #{studentQueryRequest.id}</if>
-      <if test="studentQueryRequest.stuName != null">and stu_name = #{studentQueryRequest.stuName}</if>
-      <if test="studentQueryRequest.stuAge != null">and stu_age = #{studentQueryRequest.stuAge}</if>
-      <if test="studentQueryRequest.stuBirthday != null">and stu_birthday = #{studentQueryRequest.stuBirthday}</if>
-      <if test="studentQueryRequest.gender != null">and gender = #{studentQueryRequest.gender}</if>
+#foreach($column in $columns)
+      <if test="${table.classNameLowCase}QueryRequest.${column.propertyNameLowCase} != null">and ${column.columnName} = #{${table.classNameLowCase}QueryRequest.${column.propertyNameLowCase}}</if>
+#end
     </where>
   </select>
 
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from student
-    where id = #{id,jdbcType=BIGINT}
+  <delete id="deleteByPrimaryKey">
+    delete from ${table.tableName}
+    where ${primaryKey.columnName} = #{${primaryKey.propertyNameLowCase},jdbcType=${primaryKey.dataType.toUpperCase()}}
   </delete>
 
-  <insert id="insert" parameterType="com.huinong.truffle.domain.Student">
-    insert into student (id, stu_name, stu_age, 
-      stu_birthday, gender, create_time, update_time)
-    values (#{id,jdbcType=BIGINT}, #{stuName,jdbcType=VARCHAR}, #{stuAge,jdbcType=TINYINT}, 
-      #{stuBirthday,jdbcType=TIMESTAMP}, #{gender,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  <insert id="insert" parameterType="${packagePrefix}.domain.${table.classNameCapCase}">
+    insert into ${table.tableName} (
+#foreach($column in $columns)
+    `$column.columnName`#if($velocityCount != $columns.size()),#end
+
+#end
+    ) values (
+#foreach($column in $columns)
+     #{${column.propertyNameLowCase},jdbcType=${column.dataType.toUpperCase()}}#if($velocityCount != $columns.size()),#end
+
+#end
+    )
   </insert>
 
-  <insert id="insertSelective" parameterType="com.huinong.truffle.domain.Student">
-    insert into student
+  <insert id="insertSelective" parameterType="${packagePrefix}.domain.${table.classNameCapCase}" #if($primaryKey.extra == 'auto_increment')useGeneratedKeys="true" keyProperty="${primaryKey.propertyNameLowCase}"#end>
+    insert into ${table.tableName}
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
+#foreach($column in $columns)
+      <if test="${column.propertyNameLowCase} != null">
+        ${column.columnName},
       </if>
-      <if test="stuName != null">
-        stu_name,
-      </if>
-      <if test="stuAge != null">
-        stu_age,
-      </if>
-      <if test="stuBirthday != null">
-        stu_birthday,
-      </if>
-      <if test="gender != null">
-        gender,
-      </if>
-        <if test="createTime != null">
-            create_time,
-        </if>
-        <if test="updateTime != null">
-            update_time,
-        </if>
+#end
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=BIGINT},
+#foreach($column in $columns)
+      <if test="${column.propertyNameLowCase} != null">
+        #{${column.propertyNameLowCase},jdbcType=${column.dataType.toUpperCase()}}#if($velocityCount != $columns.size()),#end
+
       </if>
-      <if test="stuName != null">
-        #{stuName,jdbcType=VARCHAR},
-      </if>
-      <if test="stuAge != null">
-        #{stuAge,jdbcType=TINYINT},
-      </if>
-      <if test="stuBirthday != null">
-        #{stuBirthday,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gender != null">
-        #{gender,jdbcType=BIT},
-      </if>
-        <if test="createTime != null">
-            #{createTime,jdbcType=TIMESTAMP},
-        </if>
-        <if test="updateTime != null">
-            #{updateTime,jdbcType=TIMESTAMP},
-        </if>
+#end
     </trim>
   </insert>
 
-  <update id="updateByPrimaryKeySelective" parameterType="com.huinong.truffle.domain.Student">
-    update student
+  <update id="updateByPrimaryKeySelective" parameterType="${packagePrefix}.domain.${table.classNameCapCase}">
+    update ${table.tableName}
     <set>
-      <if test="stuName != null">
-        stu_name = #{stuName,jdbcType=VARCHAR},
+#foreach($column in $columns)
+#if($column.columnKey != 'PRI')
+      <if test="${column.propertyNameLowCase} != null">
+        ${column.columnName} = #{${column.propertyNameLowCase},jdbcType=${column.dataType.toUpperCase()}},
       </if>
-      <if test="stuAge != null">
-        stu_age = #{stuAge,jdbcType=TINYINT},
-      </if>
-      <if test="stuBirthday != null">
-        stu_birthday = #{stuBirthday,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gender != null">
-        gender = #{gender,jdbcType=BIT},
-      </if>
-        <if test="createTime != null">
-            create_time = #{createTime,jdbcType=TIMESTAMP},
-        </if>
-        <if test="updateTime != null">
-            update_time = #{updateTime,jdbcType=TIMESTAMP},
-        </if>
+#end
+#end
     </set>
-    where id = #{id,jdbcType=BIGINT}
+    where ${primaryKey.columnName} = #{${primaryKey.propertyNameLowCase},jdbcType=${primaryKey.dataType.toUpperCase()}}
   </update>
 
-  <update id="updateByPrimaryKey" parameterType="com.huinong.truffle.domain.Student">
-    update student
-    set stu_name = #{stuName,jdbcType=VARCHAR},
-      stu_age = #{stuAge,jdbcType=TINYINT},
-      stu_birthday = #{stuBirthday,jdbcType=TIMESTAMP},
-      gender = #{gender,jdbcType=BIT},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=BIGINT}
+  <update id="updateByPrimaryKey" parameterType="${packagePrefix}.domain.${table.classNameCapCase}">
+    update ${table.tableName}
+    set #foreach($column in $columns)#if($column.columnKey != 'PRI')${column.columnName} = #{${column.propertyNameLowCase},jdbcType=${column.dataType.toUpperCase()}}#if($velocityCount != $columns.size()),#end#end#end
+
+    where ${primaryKey.columnName} = #{${primaryKey.propertyNameLowCase},jdbcType=${primaryKey.dataType.toUpperCase()}}
   </update>
 
 </mapper>

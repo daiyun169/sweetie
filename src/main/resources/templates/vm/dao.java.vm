@@ -1,27 +1,27 @@
-package com.huinong.truffle.dao;
+package ${packagePrefix}.dao;
 
-import com.huinong.truffle.domain.Student;
-import com.huinong.truffle.entity.req.StudentQueryRequest;
+import ${packagePrefix}.domain.${table.classNameCapCase};
+import ${packagePrefix}.entity.req.${table.classNameCapCase}QueryRequest;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface StudentDao {
+public interface ${table.classNameCapCase}Dao {
 
-    int deleteByPrimaryKey(Long id);
+    int deleteByPrimaryKey(${primaryKey.propertyDataType} ${primaryKey.propertyNameLowCase});
 
-    int insert(Student record);
+    int insert(${table.classNameCapCase} record);
 
-    int insertSelective(Student record);
+    int insertSelective(${table.classNameCapCase} record);
 
-    Student selectByPrimaryKey(Long id);
+    ${table.classNameCapCase} selectByPrimaryKey(${primaryKey.propertyDataType} ${primaryKey.propertyNameLowCase});
 
-    int updateByPrimaryKeySelective(Student record);
+    int updateByPrimaryKeySelective(${table.classNameCapCase} record);
 
-    int updateByPrimaryKey(Student record);
+    int updateByPrimaryKey(${table.classNameCapCase} record);
 
-    List<Student> list(@Param("studentQueryRequest") StudentQueryRequest studentQueryRequest);
+    List<${table.classNameCapCase}> list(@Param("${table.classNameLowCase}QueryRequest}") ${table.classNameCapCase}QueryRequest ${table.classNameLowCase}QueryRequest);
 
 }

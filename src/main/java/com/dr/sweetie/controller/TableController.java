@@ -39,7 +39,7 @@ public class TableController {
      * @param modelMap
      * @return
      */
-    @GetMapping(value = "/")
+    @GetMapping(value = "/" )
     public String list(ModelMap modelMap) {
         String dataBaseName = tableService.getDataBaseName();
         List<TableInfoDO> allTables = tableService.getAllTables();
@@ -51,7 +51,7 @@ public class TableController {
     /**
      * 进入新建表页面
      */
-    @GetMapping(value = "/table/to-add")
+    @GetMapping(value = "/table/to-add" )
     public String toAdd(ModelMap modelMap, @RequestParam String databaseName) {
 
         modelMap.addAttribute("dataBaseName", databaseName);
@@ -62,7 +62,7 @@ public class TableController {
     /**
      * 进入表的字段展示页
      */
-    @GetMapping(value = "/table/to-table-column-info")
+    @GetMapping(value = "/table/to-table-column-info" )
     public String toTableColumnInfo(ModelMap modelMap, @RequestParam String tableName) {
 
         List<TableColumnInfoDO> tableColumn = tableService.getTableColumn(tableName);
@@ -76,7 +76,7 @@ public class TableController {
     /**
      * 新增数据库表
      */
-    @RequestMapping(value = "/table/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/table/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8" )
     @ResponseBody
     public R add(@RequestBody TableInsertReq tableInsertReq) {
         try {
@@ -91,7 +91,7 @@ public class TableController {
     /**
      * 删除数据库表
      */
-    @RequestMapping(value = "/table/del", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/table/del", method = RequestMethod.POST, produces = "application/json;charset=UTF-8" )
     @ResponseBody
     public R del(@RequestParam String tableName) {
         tableService.delTable(tableName);
@@ -106,16 +106,16 @@ public class TableController {
      * @param tableNames
      * @throws IOException
      */
-    @GetMapping(value = "/table/generate/code")
+    @GetMapping(value = "/table/generate/code" )
     public void batchCode(HttpServletRequest request, HttpServletResponse response,
                           @RequestParam String[] tableNames,
                           @RequestParam String package_,
                           @RequestParam String prefix) throws IOException {
         byte[] bytes = tableService.generatorCode(package_, prefix, tableNames);
         response.reset();
-        response.setHeader("Content-Disposition", "attachment; filename=\"src.zip\"");
-        response.addHeader("Content-Length", "" + bytes.length);
-        response.setContentType("application/octet-stream; charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=\"src.zip\"" );
+        response.addHeader("Content-Length", bytes == null ? "0" : bytes.length + "" );
+        response.setContentType("application/octet-stream; charset=UTF-8" );
         IOUtils.write(bytes, response.getOutputStream());
     }
 

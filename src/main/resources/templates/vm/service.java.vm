@@ -1,12 +1,12 @@
-package com.huinong.truffle.service;
+package ${packagePrefix}.service;
 
 import com.github.pagehelper.PageHelper;
 import com.huinong.framework.autoconfigure.mybatis.MybatisPageValue;
-import com.huinong.truffle.dao.StudentDao;
-import com.huinong.truffle.domain.Student;
-import com.huinong.truffle.entity.req.StudentAddRequest;
-import com.huinong.truffle.entity.req.StudentQueryRequest;
-import com.huinong.truffle.entity.req.StudentUpdateRequest;
+import ${packagePrefix}.dao.${table.classNameCapCase}Dao;
+import ${packagePrefix}.domain.${table.classNameCapCase};
+import ${packagePrefix}.entity.req.${table.classNameCapCase}AddRequest;
+import ${packagePrefix}.entity.req.${table.classNameCapCase}QueryRequest;
+import ${packagePrefix}.entity.req.${table.classNameCapCase}UpdateRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,43 +20,40 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class StudentService {
+public class ${table.classNameCapCase}Service {
 
     @Autowired
-    private StudentDao studentDao;
+    private ${table.classNameCapCase}Dao ${table.classNameLowCase}Dao;
 
     /**
      * 新增
      *
-     * @param studentAddRequest
+     * @param ${table.classNameLowCase}AddRequest
      * @return
      */
-    public Student save(StudentAddRequest studentAddRequest) {
-        Student student = new Student();
-        student.setStuName(studentAddRequest.getStuName());
-        student.setStuAge(studentAddRequest.getStuAge());
-        student.setStuBirthday(studentAddRequest.getStuBirthday());
-        student.setGender(studentAddRequest.getGender());
-        student.setCreateTime(new Date());
-        studentDao.insertSelective(student);
-        return student;
+    public ${table.classNameCapCase} save(${table.classNameCapCase}AddRequest ${table.classNameLowCase}AddRequest) {
+        ${table.classNameCapCase} record = new ${table.classNameCapCase}();
+        #foreach ($column in $columns)
+        #if($column.columnKey != 'PRI')
+        record.set${column.propertyNameCapCase}(${table.classNameLowCase}AddRequest.get${column.propertyNameCapCase}());
+        #end
+        #end
+        ${table.classNameLowCase}Dao.insertSelective(record);
+        return record;
     }
 
     /**
      * 修改
      *
-     * @param studentUpdateRequest
+     * @param ${table.classNameLowCase}UpdateRequest
      * @return
      */
-    public int update(StudentUpdateRequest studentUpdateRequest) {
-        Student student = new Student();
-        student.setId(studentUpdateRequest.getId());
-        student.setStuName(studentUpdateRequest.getStuName());
-        student.setStuAge(studentUpdateRequest.getStuAge());
-        student.setStuBirthday(studentUpdateRequest.getStuBirthday());
-        student.setGender(studentUpdateRequest.getGender());
-        student.setUpdateTime(new Date());
-        return studentDao.updateByPrimaryKeySelective(student);
+    public int update(${table.classNameCapCase}UpdateRequest ${table.classNameLowCase}UpdateRequest) {
+        ${table.classNameCapCase} record = new ${table.classNameCapCase}();
+        #foreach ($column in $columns)
+        record.set${column.propertyNameCapCase}(${table.classNameLowCase}AddRequest.get${column.propertyNameCapCase}());
+        #end
+        return ${table.classNameLowCase}Dao.updateByPrimaryKeySelective(record);
     }
 
     /**
@@ -66,7 +63,7 @@ public class StudentService {
      * @return
      */
     public int remove(Long id) {
-        return studentDao.deleteByPrimaryKey(id);
+        return ${table.classNameLowCase}Dao.deleteByPrimaryKey(id);
     }
 
     /**
@@ -75,19 +72,19 @@ public class StudentService {
      * @param id
      * @return
      */
-    public Student get(Long id) {
-        return studentDao.selectByPrimaryKey(id);
+    public ${table.classNameCapCase} get(Long id) {
+        return ${table.classNameLowCase}Dao.selectByPrimaryKey(id);
     }
 
     /**
      * 列表
      *
-     * @param studentQueryRequest
+     * @param ${table.classNameLowCase}QueryRequest
      * @return
      */
-    public MybatisPageValue<Student> list(StudentQueryRequest studentQueryRequest) {
-        PageHelper.startPage(studentQueryRequest.getPageNum(), studentQueryRequest.getPageSize());
-        List<Student> list = studentDao.list(studentQueryRequest);
+    public MybatisPageValue<${table.classNameCapCase}> list(${table.classNameCapCase}QueryRequest ${table.classNameLowCase}QueryRequest) {
+        PageHelper.startPage(${table.classNameLowCase}QueryRequest.getPageNum(), ${table.classNameLowCase}QueryRequest.getPageSize());
+        List<${table.classNameCapCase}> list = ${table.classNameLowCase}Dao.list(${table.classNameLowCase}QueryRequest);
         return new MybatisPageValue<>(list);
     }
 
