@@ -11,7 +11,7 @@ spring:
   jooq:
     sql-dialect: mysql_5_7
   thymeleaf:
-    mode: LEGACYHTML5
+    mode: HTML
     cache: false
   jackson:
     time-zone: GMT+8

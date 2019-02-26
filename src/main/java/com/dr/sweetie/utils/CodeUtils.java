@@ -53,19 +53,19 @@ public class CodeUtils {
             //是否主键
             if ("PRI".equalsIgnoreCase(column.getColumnKey())) {
                 if (pk != null) {
-                    throw new RuntimeException("发现多个主键");
+                    throw new RuntimeException("发现多个主键" );
                 }
                 pk = column;
             }
         }
 
         if (pk == null) {
-            throw new RuntimeException("没有发现主键");
+            throw new RuntimeException("没有发现主键" );
         }
 
         // 设置 velocity 资源加载器
         Properties prop = new Properties();
-        prop.put("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+        prop.put("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader" );
         Velocity.init(prop);
 
         // 封装模板数据
@@ -82,14 +82,15 @@ public class CodeUtils {
         for (String template : templates) {
             //渲染模板
             StringWriter sw = new StringWriter();
-            Template tpl = Velocity.getTemplate(template, "UTF-8");
+            Template tpl = Velocity.getTemplate(template, "UTF-8" );
             tpl.merge(context, sw);
             try {
-                try{
+                try {
                     //添加到zip
-                    zip.putNextEntry(new ZipEntry(getFileName(template, table.getClassNameCapCase(), package_.substring(package_.lastIndexOf(".") + 1))));
-                    IOUtils.write(sw.toString(), zip, "UTF-8");
-                }catch(ZipException e){
+                    zip.putNextEntry(new ZipEntry(getFileName(template, table.getClassNameCapCase(), package_.substring(package_.lastIndexOf("." ) + 1))));
+                    IOUtils.write(sw.toString(), zip, "UTF-8" );
+                } catch (ZipException e) {
+                    // 添加重复文件会报异常，catch掉
                     log.error(e.getMessage());
                 }
                 IOUtils.closeQuietly(sw);
@@ -107,7 +108,7 @@ public class CodeUtils {
      * @return
      */
     public static String getHumpName(String columnName) {
-        return WordUtils.capitalizeFully(columnName, new char[]{'_'}).replace("_", "");
+        return WordUtils.capitalizeFully(columnName, new char[]{'_'}).replace("_", "" );
     }
 
     /**
@@ -118,8 +119,8 @@ public class CodeUtils {
      * @return
      */
     public static String getClassName(String tableName, String prefix) {
-        if (StringUtils.isNotBlank(prefix) && prefix.endsWith("_")) {
-            tableName = tableName.replace(prefix, "");
+        if (StringUtils.isNotBlank(prefix) && prefix.endsWith("_" )) {
+            tableName = tableName.replace(prefix, "" );
         }
         return getHumpName(tableName);
     }
@@ -147,39 +148,39 @@ public class CodeUtils {
             javaRoot += packageName.replace(".", File.separator) + File.separator;
         }
 
-        if (template.contains("domain.java.vm")) {
+        if (template.contains("domain.java.vm" )) {
             return javaRoot + "domain" + File.separator + className + ".java";
         }
 
-        if (template.contains("mapper.xml.vm")) {
+        if (template.contains("mapper.xml.vm" )) {
             return resourcesRoot + "mybatis" + File.separator + "mapper" + File.separator + className + "Dao.xml";
         }
 
-        if (template.contains("dao.java.vm")) {
+        if (template.contains("dao.java.vm" )) {
             return javaRoot + "dao" + File.separator + className + "Dao.java";
         }
 
-        if (template.contains("service.java.vm")) {
+        if (template.contains("service.java.vm" )) {
             return javaRoot + "service" + File.separator + className + "Service.java";
         }
 
-        if (template.contains("controller.java.vm")) {
+        if (template.contains("controller.java.vm" )) {
             return javaRoot + "controller" + File.separator + className + "Controller.java";
         }
 
-        if (template.contains("PageRequest.java.vm")) {
+        if (template.contains("PageRequest.java.vm" )) {
             return javaRoot + "entity" + File.separator + "PageRequest.java";
         }
 
-        if (template.contains("AddRequest.java.vm")) {
+        if (template.contains("AddRequest.java.vm" )) {
             return javaRoot + "entity" + File.separator + "req" + File.separator + className + "AddRequest.java";
         }
 
-        if (template.contains("UpdateRequest.java.vm")) {
+        if (template.contains("UpdateRequest.java.vm" )) {
             return javaRoot + "entity" + File.separator + "req" + File.separator + className + "UpdateRequest.java";
         }
 
-        if (template.contains("QueryRequest.java.vm")) {
+        if (template.contains("QueryRequest.java.vm" )) {
             return javaRoot + "entity" + File.separator + "req" + File.separator + className + "QueryRequest.java";
         }
 
@@ -193,15 +194,15 @@ public class CodeUtils {
      */
     public static List<String> getTemplates() {
         List<String> templates = new ArrayList<>(5);
-        templates.add("templates/vm/domain.java.vm");
-        templates.add("templates/vm/mapper.xml.vm");
-        templates.add("templates/vm/dao.java.vm");
-        templates.add("templates/vm/service.java.vm");
-        templates.add("templates/vm/controller.java.vm");
-        templates.add("templates/vm/PageRequest.java.vm");
-        templates.add("templates/vm/AddRequest.java.vm");
-        templates.add("templates/vm/UpdateRequest.java.vm");
-        templates.add("templates/vm/QueryRequest.java.vm");
+        templates.add("templates/vm/domain.java.vm" );
+        templates.add("templates/vm/mapper.xml.vm" );
+        templates.add("templates/vm/dao.java.vm" );
+        templates.add("templates/vm/service.java.vm" );
+        templates.add("templates/vm/controller.java.vm" );
+        templates.add("templates/vm/PageRequest.java.vm" );
+        templates.add("templates/vm/AddRequest.java.vm" );
+        templates.add("templates/vm/UpdateRequest.java.vm" );
+        templates.add("templates/vm/QueryRequest.java.vm" );
         return templates;
     }
 
