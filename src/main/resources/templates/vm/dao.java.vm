@@ -22,6 +22,6 @@ public interface ${table.classNameCapCase}Dao {
 
     int updateByPrimaryKey(${table.classNameCapCase} record);
 
-    List<${table.classNameCapCase}> list(@Param("${table.classNameLowCase}QueryRequest}") ${table.classNameCapCase}QueryRequest ${table.classNameLowCase}QueryRequest);
+    List<${table.classNameCapCase}> list(@Param("${table.classNameLowCase}QueryRequest") ${table.classNameCapCase}QueryRequest ${table.classNameLowCase}QueryRequest);
 
 }
