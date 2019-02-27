@@ -33,11 +33,11 @@ public class ${table.classNameCapCase}Service {
      */
     public ${table.classNameCapCase} save(${table.classNameCapCase}AddRequest ${table.classNameLowCase}AddRequest) {
         ${table.classNameCapCase} record = new ${table.classNameCapCase}();
-        #foreach ($column in $columns)
-        #if($column.columnKey != 'PRI')
+#foreach ($column in $columns)
+#if($column.columnKey != 'PRI')
         record.set${column.propertyNameCapCase}(${table.classNameLowCase}AddRequest.get${column.propertyNameCapCase}());
-        #end
-        #end
+#end
+#end
         ${table.classNameLowCase}Dao.insertSelective(record);
         return record;
     }
@@ -50,9 +50,9 @@ public class ${table.classNameCapCase}Service {
      */
     public int update(${table.classNameCapCase}UpdateRequest ${table.classNameLowCase}UpdateRequest) {
         ${table.classNameCapCase} record = new ${table.classNameCapCase}();
-        #foreach ($column in $columns)
-        record.set${column.propertyNameCapCase}(${table.classNameLowCase}AddRequest.get${column.propertyNameCapCase}());
-        #end
+#foreach ($column in $columns)
+        record.set${column.propertyNameCapCase}(${table.classNameLowCase}UpdateRequest.get${column.propertyNameCapCase}());
+#end
         return ${table.classNameLowCase}Dao.updateByPrimaryKeySelective(record);
     }
 

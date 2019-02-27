@@ -4,9 +4,7 @@ import com.dr.sweetie.domain.TableColumnInfoDO;
 import com.dr.sweetie.domain.TableInfoDO;
 import com.dr.sweetie.domain.TableInsertReq;
 import com.dr.sweetie.service.TableService;
-import com.dr.sweetie.utils.CodeUtils;
-import com.dr.sweetie.utils.R;
-import com.dr.sweetie.utils.SweeitsException;
+import com.dr.sweetie.utils.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * @author qewli12
@@ -78,14 +73,14 @@ public class TableController {
      */
     @RequestMapping(value = "/table/add", method = RequestMethod.POST, produces = "application/json;charset=UTF-8" )
     @ResponseBody
-    public R add(@RequestBody TableInsertReq tableInsertReq) {
+    public Result add(@RequestBody TableInsertReq tableInsertReq) {
         try {
             tableService.createTable(tableInsertReq);
         } catch (Exception e) {
             log.error("新建失败", e);
-            return R.error(e.getMessage());
+            return Result.error(e.getMessage());
         }
-        return R.ok();
+        return Result.ok();
     }
 
     /**
@@ -93,9 +88,9 @@ public class TableController {
      */
     @RequestMapping(value = "/table/del", method = RequestMethod.POST, produces = "application/json;charset=UTF-8" )
     @ResponseBody
-    public R del(@RequestParam String tableName) {
+    public Result del(@RequestParam String tableName) {
         tableService.delTable(tableName);
-        return R.ok();
+        return Result.ok();
     }
 
     /**

@@ -81,8 +81,18 @@ public class TableService {
         SQL sql = DSL.sql("select column_name columnName, data_type dataType, column_comment columnComment, column_key columnKey, extra from information_schema.columns " +
                 "where table_name = '" + StringUtils.trim(tableName) + "' and table_schema = (select database()) order by ordinal_position");
         List<TableColumnInfoDO> tableColumnInfoDOList = dslContext.fetch(sql).stream()
-                .map(record -> record.into(TableColumnInfoDO.class)).collect(toList());
-        return tableColumnInfoDOList;
+                .map(record -> record.into(TableColumnInfoDO.class))
+                .collect(toList());
+
+        List<TableColumnInfoDO> collect = tableColumnInfoDOList.stream()
+                .map(tableColumnInfoDO -> {
+                    if (tableColumnInfoDO.getDataType().equalsIgnoreCase("datetime")) {
+                        tableColumnInfoDO.setDataType("timestamp");
+                    }
+                    return tableColumnInfoDO;
+                }).collect(toList());
+
+        return collect;
     }
 
     /**
@@ -169,6 +179,7 @@ public class TableService {
             dataType = SQLDataType.DATE.nullable(false);
         } else if ("datetime".equals(type)) {
             dataType = new DefaultDataType((SQLDialect) null, Date.class, "datetime").nullable(false);
+//            dataType = SQLDataType.TIMESTAMP.nullable(false);
         } else if ("timestamp".equals(type)) {
             dataType = SQLDataType.TIMESTAMP.nullable(false);
         } else {
@@ -187,7 +198,7 @@ public class TableService {
      */
     public byte[] generatorCode(String package_, String prefix, String[] tableNames) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             ZipOutputStream zip = new ZipOutputStream(outputStream)){
+             ZipOutputStream zip = new ZipOutputStream(outputStream)) {
             for (String tableName : tableNames) {
                 // 查询表信息
                 TableInfoDO tableInfo = this.getTableInfo(tableName);
